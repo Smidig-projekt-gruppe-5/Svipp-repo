@@ -1,16 +1,25 @@
 import SwiftUI
+import MapKit
 
 struct ExploreView: View {
     @State private var fromText: String = "Min posisjon"
     @State private var toText: String = ""
     @State private var showDriverModal = false
 
+    // Kart-region – her satt til Oslo sentrum
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
+        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+    )
+
     var body: some View {
         ZStack(alignment: .top) {
-            // Bakgrunn (kart senere)
-            Color(.systemBackground)
+
+            // 📍 KART I BAKGRUNN
+            Map(coordinateRegion: $region)
                 .ignoresSafeArea()
 
+            // 🔹 OVERLAY MED SØK + KNAPP
             VStack(spacing: 12) {
                 ExploreSearchOverlay(
                     fromText: $fromText,
@@ -25,7 +34,7 @@ struct ExploreView: View {
                         print("Filter trykket")
                     }
                 )
-Spacer()
+
                 Button {
                     withAnimation(.easeInOut) {
                         showDriverModal = true
@@ -51,6 +60,7 @@ Spacer()
             .padding(.horizontal, 16)
             .padding(.top, 12)
 
+            // 🔽 SJÅFØR-MODAL
             DriverModal(isPresented: $showDriverModal)
         }
         .navigationBarTitleDisplayMode(.inline)

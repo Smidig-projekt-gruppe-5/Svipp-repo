@@ -61,7 +61,7 @@ struct DriverModal: View {
                                 }
                             }
                             .padding(.horizontal)
-                            .padding(.bottom, 80)
+                            .padding(.bottom, 90)
                         }
                     }
                     .frame(height: geometry.size.height * 0.6) // ca 2/3 av skjermen
@@ -72,6 +72,8 @@ struct DriverModal: View {
                     .transition(.move(edge: .bottom))
                 }
                 .animation(.easeInOut, value: isPresented)
+                .ignoresSafeArea()
+
             }
         }
     }

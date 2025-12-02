@@ -19,15 +19,17 @@ struct MainView: View {
                     }
                 }
             }
-            .ignoresSafeArea(edges: .bottom)
 
             // CUSTOM TAB BAR
             VStack {
                 TabBar(selectedTab: $selectedTab)
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 12)
+                    .padding(.bottom, 20)
             }
         }
+        .ignoresSafeArea(edges: .bottom)
+        
+
     }
 }
 
