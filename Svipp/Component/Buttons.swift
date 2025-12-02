@@ -45,12 +45,10 @@ struct TertiaryButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                // Midtstilt tekst
                 Text(text)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(Color("SvippTextColor"))
                 
-                // Ikon venstre + ghost-ikon høyre
                 HStack {
                     if let iconName {
                         Image(iconName)
@@ -61,7 +59,6 @@ struct TertiaryButton: View {
                     
                     Spacer()
                     
-                    // Ghost ikon – holder teksten 100% i midten
                     if iconName != nil {
                         Color.clear
                             .frame(width: iconSize, height: iconSize)
@@ -75,7 +72,7 @@ struct TertiaryButton: View {
                           red: 0.933,
                           green: 0.933,
                           blue: 0.933,
-                          opacity: 1)) // #EEEEEE
+                          opacity: 1))
         .cornerRadius(14)
         .padding(.horizontal, 16)
     }
