@@ -21,7 +21,7 @@ struct ExploreView: View {
 
             // 🔹 OVERLAY MED SØK + KNAPP
             VStack(spacing: 12) {
-                ExploreSearchOverlay(
+                ExploreSearch(
                     fromText: $fromText,
                     toText: $toText,
                     onSearch: {
@@ -59,6 +59,9 @@ struct ExploreView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
+            
+            // Zoom in og ut  knappene
+            MapZoomControls(region: $region, bottomPadding: 100)
 
             // 🔽 SJÅFØR-MODAL
             DriverModal(isPresented: $showDriverModal)
