@@ -6,7 +6,6 @@ struct MainView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
 
-            // MAIN VIEWS
             Group {
                 switch selectedTab {
                 case .explore:
