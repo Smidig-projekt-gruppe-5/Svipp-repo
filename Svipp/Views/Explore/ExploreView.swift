@@ -25,7 +25,7 @@ struct ExploreView: View {
                         print("Filter trykket")
                     }
                 )
-
+Spacer()
                 Button {
                     withAnimation(.easeInOut) {
                         showDriverModal = true
@@ -54,7 +54,6 @@ struct ExploreView: View {
             DriverModal(isPresented: $showDriverModal)
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Explore")
     }
 }
 

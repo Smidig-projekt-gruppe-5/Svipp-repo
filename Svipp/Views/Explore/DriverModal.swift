@@ -3,6 +3,20 @@ import SwiftUI
 struct DriverModal: View {
     @Binding var isPresented: Bool
 
+    // Midlertidig dummy-data – kan byttes til ekte senere
+    private let drivers: [(
+        name: String,
+        rating: String,
+        address: String,
+        yearsExperience: String,
+        price: String,
+        imageName: String
+    )] = [
+        ("Tom Nguyen", "4.8", "Oslo, gamlebyen 54", "2.år som sjåfør - 235 turer", "555kr", "Tom"),
+        ("Tom Nguyen", "4.8", "Oslo, gamlebyen 54", "2.år som sjåfør - 235 turer", "555kr", "Tom"),
+        ("Tom Nguyen", "4.8", "Oslo, gamlebyen 54", "2.år som sjåfør - 235 turer", "555kr", "Tom")
+    ]
+
     var body: some View {
         GeometryReader { geometry in
             if isPresented {
@@ -17,57 +31,40 @@ struct DriverModal: View {
                         }
 
                     // Selve modalen
-                    VStack(spacing: 16) {
+                    VStack(spacing: 12) {
                         Capsule()
                             .fill(Color.gray.opacity(0.3))
                             .frame(width: 40, height: 5)
-                            .padding(.top, 8)
+                            .padding(.top, 15)
 
-                        HStack(spacing: 16) {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 60, height: 60)
-                                .foregroundColor(.gray)
+                        Text("Tilgjengelige sjåfører")
+                            .font(.headline)
+                            .padding(.bottom, 4)
 
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("Ahmed Ali")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-
-                                Text("Toyota Prius • SV 39582")
-                                    .foregroundColor(.secondary)
-
-                                HStack {
-                                    Image(systemName: "star.fill")
-                                        .foregroundColor(.yellow)
-                                    Text("4.85")
-                                        .bold()
+                        ScrollView {
+                            VStack(spacing: 12) {
+                                ForEach(Array(drivers.enumerated()), id: \.offset) { _, driver in
+                                    Button {
+                                        // HER kan du åpne "bestilling modal" senere
+                                        print("Valgte sjåfør: \(driver.name)")
+                                    } label: {
+                                        DriverCard(
+                                            name: driver.name,
+                                            rating: driver.rating,
+                                            address: driver.address,
+                                            yearsExperience: driver.yearsExperience,
+                                            price: driver.price,
+                                            imageName: driver.imageName
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
-
-                            Spacer()
+                            .padding(.horizontal)
+                            .padding(.bottom, 80)
                         }
-                        .padding(.horizontal)
-
-                        Divider()
-
-                        Button {
-                            print("Bestill sjåfør")
-                        } label: {
-                            Text("Bestill sjåfør")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .cornerRadius(12)
-                                .foregroundColor(.white)
-                        }
-                        .padding(.horizontal)
-
-                        Spacer()
                     }
-                    .frame(height: geometry.size.height * 0.45) // litt under halv skjerm
+                    .frame(height: geometry.size.height * 0.6) // ca 2/3 av skjermen
                     .frame(maxWidth: .infinity)
                     .background(Color(.systemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
