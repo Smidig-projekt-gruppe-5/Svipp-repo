@@ -78,20 +78,39 @@ struct TertiaryButton: View {
     }
 }
 
-
-
-
-#Preview("Med ikon") {
-    TertiaryButton(text: "Logg inn med Vipps",
-                   iconName: "Svipp") {
-        print("Vipps tapped")
+struct PriceButton: View {
+    let imageName: String
+       let priceText: String
+       let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 28, height: 28)
+                    .clipShape(Circle())
+                
+                Text(priceText)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(Color("SvippTextColor"))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+        }
+        .background(
+            Color("SvippAccent"))
+        
+        .clipShape(Capsule())
+        .shadow(radius: 1)
     }
 }
 
 
-#Preview("Uten ikon") {
-    TertiaryButton(text: "Lag Bruker",
-                   iconName: nil) {
-        print("Lag bruker tapped")
+
+#Preview {
+    PriceButton(imageName: "Tom", priceText: "220 Kr") {
+        print("Tapped")
     }
 }
