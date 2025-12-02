@@ -1,9 +1,3 @@
-//
-//  Modal.swift
-//  Svipp
-//
-//  Created by Hannan Moussa on 02/12/2025.
-//
 
 import SwiftUI
 
