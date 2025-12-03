@@ -36,7 +36,7 @@ class ApiService
         
         guard let url = URL(string: urlString) else
         {
-            print("Ugyldig URL: \(urlString)")
+            print("Ugyldig URL for API Places: \(urlString)")
             return []
         }
         
