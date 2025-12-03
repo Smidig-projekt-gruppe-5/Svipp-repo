@@ -3,7 +3,7 @@ import MapKit
 
 struct MapZoomControls: View {
     @Binding var region: MKCoordinateRegion
-    var bottomPadding: CGFloat = 100   // juster høyde over tab-bar / modal
+    var bottomPadding: CGFloat = 100
     
     var body: some View {
         VStack(spacing: 20) {
@@ -38,7 +38,6 @@ struct MapZoomControls: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
     }
     
-    // MARK: - Zoom-funksjoner
     
     private func zoomIn() {
         withAnimation(.easeInOut) {

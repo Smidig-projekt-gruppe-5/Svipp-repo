@@ -23,7 +23,7 @@ struct Modal<Content: View>: View {
             if isPresented {
                 ZStack(alignment: .bottom) {
 
-                    // Background dim
+                    // Mørk bakgrunn
                     Color.black.opacity(0.4)
                         .ignoresSafeArea()
                         .onTapGesture {
@@ -32,7 +32,7 @@ struct Modal<Content: View>: View {
                             }
                         }
 
-                    // The modal bottom sheet
+                    // Selve bottom sheet’en
                     VStack(spacing: 12) {
                         Capsule()
                             .fill(Color.gray.opacity(0.3))
@@ -60,5 +60,12 @@ struct Modal<Content: View>: View {
                 .animation(.easeInOut, value: isPresented)
             }
         }
+    }
+}
+
+#Preview {
+    Modal(isPresented: .constant(true), title: "Eksempel", heightFraction: 0.9) {
+        Text("Innhold her")
+            .padding()
     }
 }
