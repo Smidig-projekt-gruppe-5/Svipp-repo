@@ -26,8 +26,10 @@ private struct InfoRow: View {
 }
 
 struct DriverOrder: View {
-    @Binding var isPresented: Bool
-    @Binding var showDriverList: Bool
+    @Binding var isPresented: Bool        // denne modalen
+    @Binding var showDriverList: Bool    // forrige modal
+    @Binding var showPickUp: Bool        // neste skjerm (PickUpModal)
+    
     let driver: DriverInfo
     
     // Midlertidige dummy-verdier
@@ -42,12 +44,13 @@ struct DriverOrder: View {
             isPresented: $isPresented,
             heightFraction: 0.9
         ) {
-            ZStack(alignment: .topLeading) {
+            ZStack(alignment: .top) {
                 
-                // Alt innhold
+                // ALT INNHOLD
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 16) {
                         
+                        // Sjåfør-header
                         DriverSummaryCard(
                             name: driver.name,
                             rating: driver.rating,
@@ -58,6 +61,7 @@ struct DriverOrder: View {
                         )
                         .padding(.horizontal)
                         
+                        // Turinfo-boks
                         SvippCard {
                             VStack(spacing: 14) {
                                 Text("Turinformasjon")
@@ -71,70 +75,96 @@ struct DriverOrder: View {
                                 Divider()
                                 
                                 VStack(spacing: 12) {
-                                    InfoRow(systemImage: "mappin.and.ellipse",
-                                            title: "Hentested",
-                                            value: pickupAddress)
+                                    InfoRow(
+                                        systemImage: "mappin.and.ellipse",
+                                        title: "Hentested",
+                                        value: pickupAddress
+                                    )
                                     
-                                    InfoRow(systemImage: "flag.checkered",
-                                            title: "Leveringssted",
-                                            value: dropoffAddress)
+                                    InfoRow(
+                                        systemImage: "flag.checkered",
+                                        title: "Leveringssted",
+                                        value: dropoffAddress
+                                    )
                                     
-                                    InfoRow(systemImage: "clock",
-                                            title: "Estimert tid",
-                                            value: estimatedTime)
+                                    InfoRow(
+                                        systemImage: "clock",
+                                        title: "Estimert tid",
+                                        value: estimatedTime
+                                    )
                                     
-                                    InfoRow(systemImage: "creditcard",
-                                            title: "Betaling",
-                                            value: paymentMethod)
+                                    InfoRow(
+                                        systemImage: "creditcard",
+                                        title: "Betaling",
+                                        value: paymentMethod
+                                    )
                                     
-                                    InfoRow(systemImage: "coloncurrencysign.circle",
-                                            title: "Pris",
-                                            value: driver.price)
+                                    InfoRow(
+                                        systemImage: "coloncurrencysign.circle",
+                                        title: "Pris",
+                                        value: driver.price
+                                    )
                                 }
                             }
                             .padding()
                         }
                         .padding(.horizontal)
                         
-                        Button {
-                            print("Bestiller tur med \(driver.name)")
-                            withAnimation(.easeInOut) {
-                                isPresented = false
-                            }
-                        } label: {
-                            Text("Bestill tur")
-                                .font(.system(size: 18, weight: .semibold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .foregroundColor(.white)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 18)
-                                        .fill(Color("SvippMainColor"))
-                                )
-                        }
-                        .padding(.horizontal, 60)
-                        .padding(.bottom, 80)
+                        Spacer(minLength: 90)
                     }
-                    .padding(.top, 32)
+                    // plass under top-bar med tilbake + bestill
+                    .padding(.top, 30)
                 }
                 
-                // TILBAKE-KNAPP
-                Button {
-                    withAnimation(.easeInOut) {
-                        isPresented = false
-                        showDriverList = true     
+                // 🔝 TOPP-BAR: Tilbake-knapp + Bestill-knapp
+                HStack {
+                    // TILBAKE
+                    Button {
+                        withAnimation(.easeInOut) {
+                            isPresented = false
+                            showDriverList = true
+                        }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(Color("SvippAccent"))
+                            .padding(10)
+                            .background(Color("SvippMainColor"))
+                            .clipShape(Circle())
+                            .shadow(radius: 3, y: 1)
                     }
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                    
+                    Spacer()
+                    
+                    // BESTILL (capsule)
+                    Button {
+                        print("Bestiller tur med \(driver.name)")
+                        withAnimation(.easeInOut) {
+                            // lukk ordremodalen
+                            isPresented = false
+                            // ikke vis driverlista
+                            showDriverList = false
+                            // vis pickup-skjermen
+                            showPickUp = true
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Text("Bestill")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 8)
                         .foregroundColor(Color("SvippAccent"))
-                        .padding(10)
-                        .background(Color("SvippMainColor"))
-                        .clipShape(Circle())
+                        .background(
+                            Capsule()
+                                .fill(Color("SvippMainColor"))
+                        )
                         .shadow(radius: 3, y: 1)
+                    }
                 }
-                .padding(.leading, 16)
-                .padding(.top, 8)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 90)
+
             }
         }
     }
@@ -144,6 +174,7 @@ struct DriverOrder: View {
     DriverOrder(
         isPresented: .constant(true),
         showDriverList: .constant(false),
+        showPickUp: .constant(false),
         driver: DriverInfo(
             name: "Tom Nguyen",
             rating: "4.8",

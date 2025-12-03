@@ -8,6 +8,7 @@ struct ExploreView: View {
     // Modal-states
     @State private var showDriverList = false
     @State private var showDriverOrder = false
+    @State private var showPickUp = false
     @State private var selectedDriver: DriverInfo? = nil
 
     // Kart-region – her satt til Oslo sentrum
@@ -19,7 +20,7 @@ struct ExploreView: View {
     var body: some View {
         ZStack(alignment: .top) {
 
-            //  KART I BAKGRUNN
+            // KART I BAKGRUNN
             Map(coordinateRegion: $region)
                 .ignoresSafeArea()
 
@@ -66,15 +67,16 @@ struct ExploreView: View {
             
             //  Zoom inn/ut-knapper
             MapZoomControls(region: $region, bottomPadding: 100)
+                .zIndex(0)
 
-            //  DRIVERLIST – første modal (velg sjåfør)
+            // DRIVERLIST – første modal (velg sjåfør)
             DriverList(
                 isPresented: $showDriverList,
                 onSelect: { driver in
                     selectedDriver = driver
                     showDriverList = false
                     
-                    // liten delay så det ikke "blinker" ved bytte
+                    // liten delay så det ikke blinker når vi bytter modal
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                         withAnimation(.easeInOut) {
                             showDriverOrder = true
@@ -82,14 +84,28 @@ struct ExploreView: View {
                     }
                 }
             )
+            .zIndex(1)
 
-            //  DRIVERORDER – andre modal (bestill tur)
+            // 🟢 DRIVERORDER – andre modal (bestill tur)
             if let selectedDriver {
                 DriverOrder(
                     isPresented: $showDriverOrder,
                     showDriverList: $showDriverList,
+                    showPickUp: $showPickUp,
                     driver: selectedDriver
                 )
+                .zIndex(2)
+            }
+
+            //  PICKUPMODAL – tredje skjerm: sjåfør på vei
+            if let selectedDriver, showPickUp {
+                PickUpModal(
+                    isPresented: $showPickUp,
+                    driver: selectedDriver,
+                    pinCode: "4279"      // midlertidig hardkodet
+                )
+                .transition(.move(edge: .bottom))
+                .zIndex(3)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
