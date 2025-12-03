@@ -7,40 +7,29 @@
 
 import SwiftUI
 
-struct RatingsView: View
-{
-    var fillPercentage: Double   // mellom 0.0 og 1.0
+struct StarRatingView: View {
+    var rating: Int
     
-    var body: some View
-    {
-        ZStack(alignment: .leading)
-        {
-            Image(systemName: "star")
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.black.opacity(0.6))  // bakgrunns-stjerne
-            
-            Image(systemName: "star.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(.yellow)
-                .mask(
-                    GeometryReader { geometry in
-                        Rectangle()
-                            .frame(width: geometry.size.width * fillPercentage)
-                    }
-                )
-                .animation(.easeInOut(duration: 0.3), value: fillPercentage)
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<5) { index in
+                Image(systemName: index < rating ? "star.fill" : "star")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(
+                        index < rating
+                        ? .yellow
+                        : Color("SvippTextColor").opacity(0.8)
+                    )
+            }
         }
     }
 }
 
-#Preview
-{
-    HStack(spacing: 20) {
-        RatingsView(fillPercentage: 0.2)
-        RatingsView(fillPercentage: 0.5)
-        RatingsView(fillPercentage: 1.0)
+#Preview {
+    VStack(spacing: 20) {
+        StarRatingView(rating: 1)
+            .frame(height: 20)
     }
     .padding()
 }
