@@ -5,11 +5,13 @@ struct PickUpModal: View {
     @Binding var isPresented: Bool
     let driver: DriverInfo
     let pinCode: String
+    @Binding var showTripCompleted: Bool
+    @State private var secondsLeft: Int = 30
+
+    
     var onCancel: (() -> Void)? = nil
 
-    @State private var isCalling = false
-    @State private var showTripCompleted = false   // 👈 Navigerer videre her
-
+    @State private var isCalling = false   // kun brukt når du trykker "Ring sjåfør"
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -38,24 +40,37 @@ struct PickUpModal: View {
             }
             .padding(.horizontal, 16)
 
-            // 📞 Calling overlay
+            // 📞 Calling overlay (kun når du trykker "Ring sjåfør")
             if isCalling {
                 callingOverlay
             }
-
-            // ⭐ Navigasjon til TripCompleted (ny skjerm)
-            NavigationLink(
-                destination: TripCompletedView(driver: driver),
-                isActive: $showTripCompleted
-            ) { EmptyView() }
         }
+        .onAppear {
+            startAutoCompleteTimer()   // 👈 STARTER MED EN GANG MODALEN ÅPNER
+        }
+        .onAppear {
+            startCountdown()
+        }
+
         .navigationBarBackButtonHidden(true)
+    }
+
+    // MARK: - 30 SEKUND AUTO TIMER
+    private func startAutoCompleteTimer() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+            // Lukk denne modal
+            isPresented = false
+            
+            // Vis TripCompleted
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                showTripCompleted = true
+            }
+        }
     }
 
     // MARK: - Overlay
     private var callingOverlay: some View {
         VStack(spacing: 12) {
-
             Image(systemName: "phone.fill")
                 .font(.system(size: 36, weight: .bold))
                 .foregroundColor(Color("SvippMainColor"))
@@ -64,7 +79,6 @@ struct PickUpModal: View {
             Text("Ringer \(driver.name)…")
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(Color("SvippTextColor"))
-                .padding(.top, 4)
 
             ProgressView()
                 .tint(Color("SvippMainColor"))
@@ -96,7 +110,7 @@ struct PickUpModal: View {
                 Text("Sjåføren er på vei…")
                     .font(.headline)
 
-                Text(etaText)
+                Text("Estimert tid: \(secondsLeft) sekunder")
                     .font(.subheadline)
                     .foregroundColor(Color("SvippMainColor"))
             }
@@ -114,7 +128,6 @@ struct PickUpModal: View {
     private var pinCard: some View {
         VStack(spacing: 10) {
             Text("Din PIN-kode:")
-                .font(.subheadline)
                 .foregroundColor(.secondary)
 
             Text(pinCode)
@@ -122,15 +135,37 @@ struct PickUpModal: View {
                 .kerning(6)
                 .foregroundColor(Color("SvippTextColor"))
         }
+        .padding()
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
-        .padding(.horizontal, 14)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(radius: 4, y: 2)
     }
+    private func startCountdown() {
+        // Oppdater hvert sekund
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
 
-    // MARK: - Bottom driver card
+            if secondsLeft > 0 {
+                secondsLeft -= 1
+            }
+
+            // Ferdig → gå til TripCompleted
+            if secondsLeft == 0 {
+                timer.invalidate()
+
+                withAnimation {
+                    isPresented = false
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    showTripCompleted = true
+                }
+            }
+        }
+    }
+
+
+    // MARK: - DRIVER INFO/BUTTONS
     private var driverBottomCard: some View {
         VStack(spacing: 12) {
 
@@ -141,89 +176,60 @@ struct PickUpModal: View {
                     .frame(width: 52, height: 52)
                     .clipShape(Circle())
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(driver.name)
-                        .font(.system(size: 18, weight: .semibold))
-
+                VStack(alignment: .leading) {
+                    Text(driver.name).font(.headline)
                     Text(driver.yearsExperience)
-                        .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
 
                 Spacer()
 
-                HStack(spacing: 4) {
+                HStack {
                     Image(systemName: "star.fill")
-                        .font(.system(size: 14))
                     Text(driver.rating)
-                        .font(.system(size: 16, weight: .semibold))
                 }
                 .foregroundColor(.black.opacity(0.85))
             }
 
             HStack(spacing: 12) {
 
-                // 📞 RING SJÅFØR
+                // 📞 Ring sjåfør (kun overlay)
                 Button {
-                    simulateCalling()  // 👈 30 sek + navigasjon
+                    withAnimation { isCalling = true }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                        withAnimation { isCalling = false }
+                    }
+
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "phone")
                         Text("Ring sjåfør")
                     }
-                    .font(.system(size: 15, weight: .semibold))
                     .padding(.vertical, 8)
                     .padding(.horizontal, 14)
                     .foregroundColor(Color("SvippMainColor"))
-                    .background(
-                        Capsule()
-                            .stroke(Color("SvippMainColor"), lineWidth: 1.5)
-                    )
+                    .background(Capsule().stroke(Color("SvippMainColor"), lineWidth: 1.5))
                 }
 
                 Spacer()
 
-                // ❌ Avbryt tur
+                // ❌ Avbryt
                 Button {
                     onCancel?()
                     withAnimation { isPresented = false }
                 } label: {
                     Text("Avbryt turen")
-                        .font(.system(size: 15, weight: .semibold))
                         .padding(.vertical, 8)
                         .padding(.horizontal, 18)
                         .foregroundColor(.white)
-                        .background(
-                            Capsule()
-                                .fill(Color.red.opacity(0.85))
-                        )
+                        .background(Capsule().fill(Color.red.opacity(0.85)))
                 }
             }
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 14)
+        .padding()
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(radius: 4, y: 2)
-    }
-
-    // MARK: - 30 SEKUND SIMULERT ANROP
-    private func simulateCalling() {
-        withAnimation(.easeInOut) {
-            isCalling = true
-        }
-
-        // ⏳ 30 SECONDS
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
-
-            withAnimation(.easeInOut) {
-                isCalling = false
-            }
-
-            // 👉 Naviger til TripCompleted
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                showTripCompleted = true
-            }
-        }
     }
 }
