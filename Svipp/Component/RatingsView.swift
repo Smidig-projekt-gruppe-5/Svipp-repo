@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StarRatingView: View {
     var rating: Int
+ 
     
     var body: some View {
         HStack(spacing: 4) {

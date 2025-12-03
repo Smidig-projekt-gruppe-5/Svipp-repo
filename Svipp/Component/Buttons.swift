@@ -36,11 +36,12 @@ struct SecondaryButton: View {
 }
 
 struct TertiaryButton: View {
+    
     let text: String
     let iconName: String?
     let action: () -> Void
     
-    private let iconSize: CGFloat = 24
+    private let iconSize: CGFloat = 44
     
     var body: some View {
         Button(action: action) {
@@ -108,9 +109,20 @@ struct PriceButton: View {
 }
 
 
+struct Buttons_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack(spacing: 20) {
 
-#Preview {
-    PriceButton(imageName: "Tom", priceText: "220 Kr") {
-        print("Tapped")
+            PrimaryButton(text: "Primary") { }
+
+            SecondaryButton(text: "Secondary") { }
+
+            TertiaryButton(text: "Tertiary", iconName: "exampleIcon") { }
+
+            PriceButton(imageName: "exampleProfile", priceText: "NOK 129") { }
+
+        }
+        .padding()
+        .previewLayout(.sizeThatFits)
     }
 }
