@@ -181,7 +181,14 @@ struct DriverOrder: View {
             address: "Oslo, Gamlebyen 54",
             yearsExperience: "2 år – 235 turer",
             price: "555 kr",
-            imageName: "Tom"
+            imageName: "Tom",
+            
+            age: nil,
+            employmentDate: nil,
+            tripCount: nil,
+            about: nil,
+            reviews: nil,
+            
         )
     )
 }

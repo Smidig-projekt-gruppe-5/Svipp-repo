@@ -10,9 +10,22 @@
 		A2CF8C662EDE1E47007B197B /* Svipp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Svipp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AEF55BDB2EE05889008F5C95 /* Exceptions for "Svipp" folder in "Svipp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A2CF8C652EDE1E47007B197B /* Svipp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A2CF8C682EDE1E47007B197B /* Svipp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AEF55BDB2EE05889008F5C95 /* Exceptions for "Svipp" folder in "Svipp" target */,
+			);
 			path = Svipp;
 			sourceTree = "<group>";
 		};
