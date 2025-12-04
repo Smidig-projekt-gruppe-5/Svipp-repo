@@ -6,26 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		173BC32B2EE1B34E00385250 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC32A2EE1B34E00385250 /* FirebaseAnalyticsCore */; };
+		173BC32D2EE1B34E00385250 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC32C2EE1B34E00385250 /* FirebaseAuth */; };
+		173BC32F2EE1B34E00385250 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC32E2EE1B34E00385250 /* FirebaseFirestore */; };
+		173BC3312EE1B34E00385250 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC3302EE1B34E00385250 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A2CF8C662EDE1E47007B197B /* Svipp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Svipp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AEF55BDB2EE05889008F5C95 /* Exceptions for "Svipp" folder in "Svipp" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A2CF8C652EDE1E47007B197B /* Svipp */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A2CF8C682EDE1E47007B197B /* Svipp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				AEF55BDB2EE05889008F5C95 /* Exceptions for "Svipp" folder in "Svipp" target */,
-			);
 			path = Svipp;
 			sourceTree = "<group>";
 		};
@@ -36,6 +30,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				173BC32B2EE1B34E00385250 /* FirebaseAnalyticsCore in Frameworks */,
+				173BC3312EE1B34E00385250 /* FirebaseStorage in Frameworks */,
+				173BC32D2EE1B34E00385250 /* FirebaseAuth in Frameworks */,
+				173BC32F2EE1B34E00385250 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +76,10 @@
 			);
 			name = Svipp;
 			packageProductDependencies = (
+				173BC32A2EE1B34E00385250 /* FirebaseAnalyticsCore */,
+				173BC32C2EE1B34E00385250 /* FirebaseAuth */,
+				173BC32E2EE1B34E00385250 /* FirebaseFirestore */,
+				173BC3302EE1B34E00385250 /* FirebaseStorage */,
 			);
 			productName = Svipp;
 			productReference = A2CF8C662EDE1E47007B197B /* Svipp.app */;
@@ -107,6 +109,9 @@
 			);
 			mainGroup = A2CF8C5D2EDE1E47007B197B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A2CF8C672EDE1E47007B197B /* Products */;
 			projectDirPath = "";
@@ -333,6 +338,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		173BC32A2EE1B34E00385250 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		173BC32C2EE1B34E00385250 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		173BC32E2EE1B34E00385250 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		173BC3302EE1B34E00385250 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A2CF8C5E2EDE1E47007B197B /* Project object */;
 }
