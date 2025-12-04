@@ -9,7 +9,7 @@ struct AutocompleteResponse: Codable {
 
 // Ett enkelt forslag i autocomplete-resultatene
 struct AutocompleteSuggestion: Codable, Identifiable {
-    let id = UUID()
+    var id = UUID()
     let properties: AutocompleteProperties
     let geometry: AutocompleteGeometry
 }

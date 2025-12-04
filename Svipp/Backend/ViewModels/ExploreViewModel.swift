@@ -13,8 +13,13 @@ class ExploreViewModel: ObservableObject {
 
     @Published var query: String = ""
     @Published var suggestions: [AutocompleteSuggestion] = []
+   
+    //Fra API
     @Published var places: [PlaceFeature] = []
 
+    //Sjåfører som skal vises
+    @Published var drivers: [DriverInfo] = []
+    
     @Published var isLoading = false
     @Published var errorMessage: String?
 
@@ -35,6 +40,21 @@ class ExploreViewModel: ObservableObject {
             print("Autocomplete error: \(error)")
         }
     }
+    
+    //Sjåfører fra places
+       func buildDriversFromPlaces() {
+           // Tilfeldig sjåfør
+           var shuffled = DriverSamples.all.shuffled()
+
+           //Antall sjåfører skal matche antall steder fra API
+           let count = min(places.count, shuffled.count)
+
+           //Klipp listen slik at de matcher
+           shuffled = Array(shuffled.prefix(count))
+
+           //Resultatet
+           self.drivers = shuffled
+       }
 
     // Henter steder
     func fetchPlaces(lat: Double, lon: Double, category: String) async {
@@ -49,9 +69,12 @@ class ExploreViewModel: ObservableObject {
             )
 
             self.places = result
+            
+            //places - sjåfør
+            self.buildDriversFromPlaces( )
 
         } catch {
-            self.errorMessage = "Kunne ikke hente steder"
+            self.errorMessage = "Kunne ikke hente sjåfører. Prøv igjen."
         }
 
         isLoading = false
