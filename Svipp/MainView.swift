@@ -5,7 +5,6 @@ struct MainView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-
             Group {
                 switch selectedTab {
                 case .explore:
@@ -20,10 +19,9 @@ struct MainView: View {
             }
             .ignoresSafeArea(edges: .bottom)
 
-            // CUSTOM TAB BAR
             TabBar(selectedTab: $selectedTab)
                 .padding(.horizontal, 16)
-                .padding(.bottom, 20)        
+                .padding(.bottom, 20)
         }
         .ignoresSafeArea(edges: .bottom)
     }

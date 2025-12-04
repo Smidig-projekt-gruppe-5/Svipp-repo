@@ -1,13 +1,9 @@
-//
-//  CreateAccountView.swift
-//  Svipp
-//
-//  Created by Kasper Espenes on 03/12/2025.
-//
-
 import SwiftUI
 
 struct CreateAccountView: View {
+    @EnvironmentObject var authService: AuthService
+    @Environment(\.dismiss) private var dismiss
+    
     @State private var name: String = ""
     @State private var birthdate: String = ""
     @State private var email: String = ""
@@ -73,9 +69,26 @@ struct CreateAccountView: View {
                 }
                 .padding(.horizontal, 24)
                 
-                SecondaryButton(text: "Opprett konto") {
-                    // Lag bruker handler
+                if let errorMessage = authService.authError {
+                    Text(errorMessage)
+                        .font(.system(size: 12))
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
                 }
+                
+                SecondaryButton(
+                    text: authService.isLoading ? "Oppretter konto..." : "Opprett konto"
+                ) {
+                    if authService.isLoading { return }
+                    authService.createAccount(
+                        name: name,
+                        birthdate: birthdate,
+                        email: email,
+                        password: password
+                    )
+                }
+                .disabled(name.isEmpty || email.isEmpty || password.isEmpty || authService.isLoading)
                 
                 Spacer()
                 
@@ -87,11 +100,18 @@ struct CreateAccountView: View {
                     .padding(.bottom, 16)
             }
         }
+        .onChange(of: authService.user) { newUser in
+            // Hvis bruker ble opprettet -> lukk create-account view
+            if newUser != nil {
+                dismiss()
+            }
+        }
     }
 }
 
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
         CreateAccountView()
+            .environmentObject(AuthService.shared)
     }
 }

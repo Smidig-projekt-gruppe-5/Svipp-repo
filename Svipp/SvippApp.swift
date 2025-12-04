@@ -1,23 +1,29 @@
 import SwiftUI
 import SwiftData
+import FirebaseCore
+import FirebaseAuth
+import UIKit
+
+// MARK: - Firebase AppDelegate
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+    ) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
+}
 
 @main
 struct SvippApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var authService = AuthService.shared
     
-    init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()          // ingen gjennomsiktighet
-        appearance.backgroundColor = UIColor.systemBackground  // samme som app-bakgrunn
-        // Du kan bruke f.eks. UIColor.systemGray6 for litt lys “kort”-følelse
-
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-    }
-
-
     var body: some Scene {
         WindowGroup {
-            MainView()
+            RootView()                     // 👈 VIKTIG: IKKE MainView her
+                .environmentObject(authService)
         }
     }
 }

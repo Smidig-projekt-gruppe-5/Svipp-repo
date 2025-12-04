@@ -6,22 +6,22 @@ struct PickUpModal: View {
     let driver: DriverInfo
     let pinCode: String
     @Binding var showTripCompleted: Bool
-    @State private var secondsLeft: Int = 30
-
     
     var onCancel: (() -> Void)? = nil
 
-    @State private var isCalling = false   // kun brukt når du trykker "Ring sjåfør"
+    @State private var isCalling = false
+    @State private var secondsLeft: Int = 30
+    @State private var countdownTimer: Timer? = nil   // 👈 så vi kan stoppe den
+
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
 
-    private let etaText = "Estimert ventetid: 5–10 min"
-
     var body: some View {
         ZStack(alignment: .top) {
 
+            // Kart
             Map(coordinateRegion: $region)
                 .ignoresSafeArea()
 
@@ -40,32 +40,50 @@ struct PickUpModal: View {
             }
             .padding(.horizontal, 16)
 
-            // 📞 Calling overlay (kun når du trykker "Ring sjåfør")
+            // 📞 Calling overlay
             if isCalling {
                 callingOverlay
             }
         }
         .onAppear {
-            startAutoCompleteTimer()   // 👈 STARTER MED EN GANG MODALEN ÅPNER
+            secondsLeft = 30                 // reset hver gang modalen åpnes
+            startCountdown()                 // ⏱ start nedtelling
         }
-        .onAppear {
-            startCountdown()
+        .onDisappear {
+            stopCountdown()                  // rydde opp hvis vi går bort
         }
-
         .navigationBarBackButtonHidden(true)
     }
 
-    // MARK: - 30 SEKUND AUTO TIMER
-    private func startAutoCompleteTimer() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
-            // Lukk denne modal
-            isPresented = false
-            
-            // Vis TripCompleted
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                showTripCompleted = true
+    // MARK: - NEDTELLING
+
+    private func startCountdown() {
+        // Unngå å lage flere timere
+        if countdownTimer != nil { return }
+
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if secondsLeft > 0 {
+                secondsLeft -= 1
+            }
+
+            if secondsLeft == 0 {
+                timer.invalidate()
+                countdownTimer = nil
+
+                withAnimation {
+                    isPresented = false
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    showTripCompleted = true
+                }
             }
         }
+    }
+
+    private func stopCountdown() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
     }
 
     // MARK: - Overlay
@@ -141,29 +159,6 @@ struct PickUpModal: View {
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(radius: 4, y: 2)
     }
-    private func startCountdown() {
-        // Oppdater hvert sekund
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-
-            if secondsLeft > 0 {
-                secondsLeft -= 1
-            }
-
-            // Ferdig → gå til TripCompleted
-            if secondsLeft == 0 {
-                timer.invalidate()
-
-                withAnimation {
-                    isPresented = false
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    showTripCompleted = true
-                }
-            }
-        }
-    }
-
 
     // MARK: - DRIVER INFO/BUTTONS
     private var driverBottomCard: some View {
@@ -209,21 +204,27 @@ struct PickUpModal: View {
                     .padding(.vertical, 8)
                     .padding(.horizontal, 14)
                     .foregroundColor(Color("SvippMainColor"))
-                    .background(Capsule().stroke(Color("SvippMainColor"), lineWidth: 1.5))
+                    .background(
+                        Capsule().stroke(Color("SvippMainColor"), lineWidth: 1.5)
+                    )
                 }
 
                 Spacer()
 
-                // ❌ Avbryt
+                //  Avbryt
                 Button {
                     onCancel?()
+                    stopCountdown()         //  stopp nedtellingen
+                    showTripCompleted = false
                     withAnimation { isPresented = false }
                 } label: {
                     Text("Avbryt turen")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 18)
                         .foregroundColor(.white)
-                        .background(Capsule().fill(Color.red.opacity(0.85)))
+                        .background(
+                            Capsule().fill(Color.red.opacity(0.85))
+                        )
                 }
             }
         }
