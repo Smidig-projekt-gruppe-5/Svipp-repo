@@ -16,7 +16,7 @@ struct PlaceResponse: Codable
 //Et enkeltsted fra API
 struct PlaceFeature: Codable, Identifiable
 {
-    let id = UUID()
+    var id = UUID()
     let properties: PlaceProperties
     let geometry: PlaceGeometry
 }
