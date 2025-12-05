@@ -2,6 +2,7 @@ import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
+import UIKit
 
 class AuthService: ObservableObject {
     static let shared = AuthService()
@@ -12,6 +13,9 @@ class AuthService: ObservableObject {
     @Published var user: FirebaseAuth.User?
     @Published var currentUserProfile: UserInfo?
     
+    /// Global liste med sjåfører (fra Firestore "drivers"-collection)
+    @Published var previousDrivers: [DriverInfo] = []
+    
     private let db = Firestore.firestore()
     private let storage = Storage.storage()
     
@@ -21,6 +25,9 @@ class AuthService: ObservableObject {
         if let user = self.user {
             loadUserProfile(uid: user.uid)
         }
+        
+        // Sjåfører er globale – last dem uansett
+        loadPreviousDrivers()
     }
     
     // MARK: - Logg inn
@@ -38,6 +45,8 @@ class AuthService: ObservableObject {
                 } else if let user = result?.user {
                     self.user = user
                     self.loadUserProfile(uid: user.uid)
+                    // sjåfører er fortsatt globale
+                    self.loadPreviousDrivers()
                 }
             }
         }
@@ -88,18 +97,20 @@ class AuthService: ObservableObject {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
             
             db.collection("users").document(profile.id).setData(json) { [weak self] error in
-                if let error = error {
-                    print("Feil ved lagring av profil:", error)
-                    self?.authError = error.localizedDescription
-                } else {
-                    DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("Feil ved lagring av profil:", error)
+                        self?.authError = error.localizedDescription
+                    } else {
                         self?.currentUserProfile = profile
                     }
                 }
             }
         } catch {
             print("Feil ved encoding av profil:", error)
-            self.authError = "Kunne ikke lagre brukerprofil"
+            DispatchQueue.main.async {
+                self.authError = "Kunne ikke lagre brukerprofil"
+            }
         }
     }
     
@@ -139,7 +150,11 @@ class AuthService: ObservableObject {
         completion: ((Error?) -> Void)? = nil
     ) {
         guard let user = user else {
-            let error = NSError(domain: "AuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Ingen innlogget bruker"])
+            let error = NSError(
+                domain: "AuthService",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Ingen innlogget bruker"]
+            )
             completion?(error)
             return
         }
@@ -177,7 +192,9 @@ class AuthService: ObservableObject {
             }
         } catch {
             print("Feil ved encoding av oppdatert profil:", error)
-            self.authError = "Kunne ikke oppdatere brukerprofil"
+            DispatchQueue.main.async {
+                self.authError = "Kunne ikke oppdatere brukerprofil"
+            }
             completion?(error)
         }
     }
@@ -185,13 +202,21 @@ class AuthService: ObservableObject {
     // MARK: - Opplasting av profilbilde
     func uploadProfileImage(_ image: UIImage, completion: ((Error?) -> Void)? = nil) {
         guard let user = user else {
-            let error = NSError(domain: "AuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Ingen innlogget bruker"])
+            let error = NSError(
+                domain: "AuthService",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Ingen innlogget bruker"]
+            )
             completion?(error)
             return
         }
         
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            let error = NSError(domain: "AuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Kunne ikke konvertere bilde"])
+            let error = NSError(
+                domain: "AuthService",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Kunne ikke konvertere bilde"]
+            )
             completion?(error)
             return
         }
@@ -206,7 +231,9 @@ class AuthService: ObservableObject {
         ref.putData(imageData, metadata: metadata) { [weak self] _, error in
             if let error = error {
                 print("❌ Feil ved opplasting av bilde:", error)
-                self?.authError = error.localizedDescription
+                DispatchQueue.main.async {
+                    self?.authError = error.localizedDescription
+                }
                 completion?(error)
                 return
             }
@@ -214,13 +241,20 @@ class AuthService: ObservableObject {
             ref.downloadURL { url, error in
                 if let error = error {
                     print("❌ Feil ved henting av downloadURL:", error)
-                    self?.authError = error.localizedDescription
+                    DispatchQueue.main.async {
+                        self?.authError = error.localizedDescription
+                    }
                     completion?(error)
                     return
                 }
                 
                 guard let url = url else {
-                    completion?(NSError(domain: "AuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Mangler URL"]))
+                    let err = NSError(
+                        domain: "AuthService",
+                        code: 0,
+                        userInfo: [NSLocalizedDescriptionKey: "Mangler URL"]
+                    )
+                    completion?(err)
                     return
                 }
                 
@@ -249,12 +283,117 @@ class AuthService: ObservableObject {
         }
     }
     
+    // MARK: - Sjåfører (global "drivers"-collection)
+    
+    /// Leser ALLE sjåfører fra Firestore /drivers
+    func loadPreviousDrivers() {
+        db.collection("drivers")
+            .order(by: "lastTripAt", descending: true)
+            .getDocuments { [weak self] snapshot, error in
+                if let error = error {
+                    print("Feil ved henting av sjåfører:", error)
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else { return }
+                
+                var loaded: [DriverInfo] = []
+                
+                for doc in documents {
+                    let data = doc.data()
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: data)
+                        let driver = try JSONDecoder().decode(DriverInfo.self, from: jsonData)
+                        loaded.append(driver)
+                    } catch {
+                        print("Feil ved decoding av DriverInfo:", error)
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    self?.previousDrivers = loaded
+                }
+            }
+    }
+    
+    /// Lagrer en sjåfør i /drivers
+    func addPreviousDriver(_ driver: DriverInfo, completion: ((Error?) -> Void)? = nil) {
+        do {
+            let data = try JSONEncoder().encode(driver)
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+            
+            db.collection("drivers")
+                .document(driver.id)
+                .setData(json) { [weak self] error in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            print("Feil ved lagring av sjåfør:", error)
+                            completion?(error)
+                        } else {
+                            self?.previousDrivers.insert(driver, at: 0)
+                            completion?(nil)
+                        }
+                    }
+                }
+        } catch {
+            print("Feil ved encoding av DriverInfo:", error)
+            completion?(error)
+        }
+    }
+    
+    /// Oppdaterer en sjåfør i /drivers
+    func updateDriver(_ driver: DriverInfo, completion: ((Error?) -> Void)? = nil) {
+        do {
+            let data = try JSONEncoder().encode(driver)
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+            
+            db.collection("drivers")
+                .document(driver.id)
+                .setData(json, merge: true) { [weak self] error in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            print("Feil ved oppdatering av sjåfør:", error)
+                            completion?(error)
+                        } else {
+                            if let index = self?.previousDrivers.firstIndex(where: { $0.id == driver.id }) {
+                                self?.previousDrivers[index] = driver
+                            }
+                            completion?(nil)
+                        }
+                    }
+                }
+        } catch {
+            print("Feil ved encoding av DriverInfo i updateDriver:", error)
+            completion?(error)
+        }
+    }
+    
+    /// Test-sjåfør
+    func addTestDriver() {
+        let formatter = ISO8601DateFormatter()
+        
+        let driver = DriverInfo(
+            id: UUID().uuidString,
+            name: "Test-sjåfør",
+            rating: "4.8",
+            address: "Oslo sentrum",
+            experienceYears: 2,
+            totalTrips: 200,
+            price: "550 kr",
+            imageName: "Tom",
+            lastTripAt: formatter.string(from: Date())
+        )
+        
+        addPreviousDriver(driver) { _ in }
+    }
+    
     // MARK: - Logg ut
     func signOut() {
         do {
             try Auth.auth().signOut()
             self.user = nil
             self.currentUserProfile = nil
+            self.previousDrivers = []
         } catch {
             self.authError = error.localizedDescription
         }
