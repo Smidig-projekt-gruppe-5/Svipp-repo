@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ReceiptView: View {
     
-    //Disse kan vi endre senere når vi får ejkte data
+    //Disse kan vi endre senere når vi får ekte data
     var name: String = "Mathias"
     var total: String = "NOK 459"
     var paymentMethod: String = "Visa *1234"
