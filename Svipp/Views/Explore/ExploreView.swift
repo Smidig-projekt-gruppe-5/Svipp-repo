@@ -1,57 +1,126 @@
 import SwiftUI
+import MapKit
 
 struct ExploreView: View {
+    @EnvironmentObject var authService: AuthService
+    
     @State private var fromText: String = "Min posisjon"
     @State private var toText: String = ""
-    @State private var showDriverModal = false
+    @State private var showFilter = false
+    
+    // Modal-states
+    @State private var showDriverList = false
+    @State private var showDriverOrder = false
+    @State private var showPickUp = false
+    @State private var showTripCompleted = false
+    @State private var selectedDriver: DriverInfo? = nil
+    
+    // Booking
+    @State private var showBooking = false
+    @State private var bookingDate = Date()
+    @State private var showBookingConfirmation = false
+
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
+        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+    )
 
     var body: some View {
         ZStack(alignment: .top) {
-            // Bakgrunn (kart senere)
-            Color(.systemBackground)
+            // Bakgrunnskart
+            Map(coordinateRegion: $region)
                 .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                ExploreSearchOverlay(
+                ExploreSearch(
                     fromText: $fromText,
                     toText: $toText,
                     onSearch: {
-                        print("Søk på \(toText)")
+                        guard !toText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                            return
+                        }
+                        withAnimation {
+                            showDriverList = true
+                        }
                     },
                     onBooking: {
-                        print("Booking trykket")
-                    },
-                    onFilter: {
-                        print("Filter trykket")
+                        showBooking = true
                     }
                 )
-
-                Button {
-                    withAnimation(.easeInOut) {
-                        showDriverModal = true
-                    }
-                } label: {
-                    HStack {
-                        Image(systemName: "car.fill")
-                        Text("Simuler sjåfør")
-                            .fontWeight(.medium)
-                    }
-                    .font(.system(size: 16))
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        Capsule().fill(Color(red: 0.47, green: 0.70, blue: 0.72))
-                    )
-                    .foregroundColor(.white)
-                    .padding(.top, 6)
-                }
 
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
 
-            DriverModal(isPresented: $showDriverModal)
+            MapZoomControls(region: $region, bottomPadding: 100)
+                .zIndex(0)
+
+            // Første modal – velg sjåfør
+            DriverList(
+                isPresented: $showDriverList,
+                onSelect: { driver in
+                    selectedDriver = driver
+                    showDriverList = false
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation {
+                            showDriverOrder = true
+                        }
+                    }
+                }
+            )
+            .zIndex(1)
+
+            // Andre modal – bestill
+            if let selectedDriver {
+                DriverOrder(
+                    isPresented: $showDriverOrder,
+                    showDriverList: $showDriverList,
+                    showPickUp: $showPickUp,
+                    driver: selectedDriver
+                )
+                .zIndex(2)
+            }
+
+            // Tredje skjerm – sjåfør på vei
+            if let selectedDriver, showPickUp {
+                PickUpModal(
+                    isPresented: $showPickUp,
+                    driver: selectedDriver,
+                    pinCode: "4279",
+                    showTripCompleted: $showTripCompleted
+                )
+                .transition(.move(edge: .bottom))
+                .zIndex(3)
+            }
+        }
+        // Booking-sheet
+        .sheet(isPresented: $showBooking) {
+            BookingView(
+                fromAddress: fromText,
+                toAddress: toText,
+                bookingDate: $bookingDate
+            ) { from, to, info in
+                _ = authService.addBooking(
+                    from: from,
+                    to: to,
+                    pickupTime: bookingDate
+                )
+                
+                showBooking = false
+                showBookingConfirmation = true
+            }
+        }
+        // Fullskjerm for tur fullført
+        .fullScreenCover(isPresented: $showTripCompleted) {
+            TripCompleted(isPresented: $showTripCompleted)
+        }
+        // Bekreftelses-alert etter booking
+        .alert("Booking bekreftet", isPresented: $showBookingConfirmation) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Vi har mottatt bookingen din. Du finner den under profilen din.")
         }
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -60,5 +129,6 @@ struct ExploreView: View {
 #Preview {
     NavigationStack {
         ExploreView()
+            .environmentObject(AuthService.shared)
     }
 }

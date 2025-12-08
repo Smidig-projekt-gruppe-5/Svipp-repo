@@ -1,0 +1,75 @@
+import SwiftUI
+
+struct DriverSummaryCard: View {
+    let name: String
+    let rating: String
+    let address: String
+    let yearsExperience: String
+    let price: String
+    let imageName: String
+
+    var body: some View {
+        HStack(spacing: 16) {
+            // Sjåførbilde
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 70, height: 70)
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 6) {
+
+                // Navn + rating
+                HStack {
+                    Text(name)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+
+                    Spacer(minLength: 8)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                            .font(.system(size: 14))
+                        Text(rating)
+                            .font(.body)
+                            .fontWeight(.semibold)
+                    }
+                }
+
+                Text(address)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                Text(yearsExperience)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            // Pris
+            Text(price)
+                .font(.title3)
+                .fontWeight(.bold)
+        }
+        .padding()
+        .padding(.top,20)
+        .background(Color(.systemBackground))
+    }
+}
+
+#Preview {
+    ZStack {
+        Color(.systemGray6).ignoresSafeArea()
+        DriverSummaryCard(
+            name: "Tom Nguyen",
+            rating: "4.8",
+            address: "Oslo, gamlebyen 54",
+            yearsExperience: "2 år – 235 turer",
+            price: "555 kr",
+            imageName: "Tom"
+        )
+        .padding()
+    }
+}

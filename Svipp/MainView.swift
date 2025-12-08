@@ -1,27 +1,35 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var selectedTab: TabSelection = .explore
+    
     var body: some View {
-        TabView {
-            NavigationStack {
-                ExploreView()
+        ZStack(alignment: .bottom) {
+            
+            Group {
+                switch selectedTab {
+                case .explore:
+                    NavigationStack {
+                        ExploreView()
+                    }
+                case .profile:
+                    NavigationStack {
+                        ProfileView()
+                    }
+                }
             }
-            .tabItem {
-                Label("Explore", systemImage: "magnifyingglass")
-            }
+            .ignoresSafeArea(edges: .bottom)
 
-            NavigationStack {
-                ProfileView()
-            }
-            .tabItem {
-                
-                Label("Profile", systemImage: "person.circle")
-            }
+            // Ny TabBar
+            TabBar(selectedTab: $selectedTab)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
         }
-        .tint(.purple)
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
 #Preview {
     MainView()
 }
+
