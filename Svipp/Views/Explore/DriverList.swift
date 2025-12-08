@@ -6,6 +6,9 @@ struct DriverList: View {
     
     @EnvironmentObject var authService: AuthService
     
+    // 👇 Legg til state for valgt sorteringsmodus
+    @State private var sortMode: DriverSortMode = .distance
+    
     var body: some View {
         Modal(
             isPresented: $isPresented,
@@ -15,13 +18,26 @@ struct DriverList: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 12) {
                     
+                    // 🔹 Filter-knappen på toppen av listen
+                    HStack {
+                        DriverFilterMenu(selectedMode: $sortMode)
+                        Spacer()
+                    }
+                    .padding(.top, 4)
+                    
                     if authService.previousDrivers.isEmpty {
                         Text("Ingen sjåfører tilgjengelig enda")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                             .padding(.top, 8)
                     } else {
-                        ForEach(authService.previousDrivers) { driver in
+                        // 🔹 Sorter sjåførene basert på valgt modus
+                        let sortedDrivers = DriverFilter.sort(
+                            drivers: authService.previousDrivers,
+                            by: sortMode
+                        )
+                        
+                        ForEach(sortedDrivers) { driver in
                             Button {
                                 withAnimation(.easeInOut) {
                                     onSelect(driver)
