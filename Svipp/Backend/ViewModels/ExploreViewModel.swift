@@ -25,6 +25,8 @@ class ExploreViewModel: ObservableObject {
 
     private let autocompleteService = AutocompleteService()
     private let apiService = ApiService()
+    
+    
 
     //Forslag fra autocomplete
     func searchAutocomplete() async {
@@ -79,4 +81,6 @@ class ExploreViewModel: ObservableObject {
 
         isLoading = false
     }
+    
+    
 }
