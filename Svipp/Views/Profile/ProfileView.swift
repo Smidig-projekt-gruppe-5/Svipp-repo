@@ -22,6 +22,14 @@ struct ProfileView: View {
                         ProfileInfoSection(profile: profile)
                     }
 
+                    ProfileBookingsSection(
+                        bookings: authService.bookings,
+                        onDelete: { booking in
+                            authService.deleteBooking(booking)
+                        }
+                    )
+
+
                     ProfileTripsSection(drivers: authService.previousDrivers)
                     
                     Spacer(minLength: 0)

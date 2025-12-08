@@ -68,11 +68,10 @@ struct ExploreSearch: View {
             Button(action: onBooking) {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar.badge.plus")
-                          .resizable()
+                        .resizable()
                         .scaledToFit()
                         .foregroundColor(Color.svippAccent)
                         .frame(width: 22, height: 22)
-
 
                     Text("Booking")
                         .font(.system(size: 16, weight: .semibold))
@@ -93,8 +92,7 @@ struct ExploreSearch: View {
         fromText: .constant("Min posisjon"),
         toText: .constant("Kalfarlien 21, Bergen"),
         onSearch: {},
-        onBooking: {},
-    
+        onBooking: {}
     )
     .padding()
 }

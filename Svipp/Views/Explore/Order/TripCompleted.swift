@@ -1,9 +1,3 @@
-//
-//  TripCompleted.swift
-//  Svipp
-//
-//  Created by Helena Simonsen on 03/12/2025.
-//
 
 import SwiftUI
 

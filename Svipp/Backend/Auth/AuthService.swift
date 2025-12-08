@@ -15,6 +15,8 @@ class AuthService: ObservableObject {
     
     /// Global liste med sjåfører (fra Firestore "drivers"-collection)
     @Published var previousDrivers: [DriverInfo] = []
+    @Published var bookings: [SvippBooking] = []
+
     
     private let db = Firestore.firestore()
     private let storage = Storage.storage()
@@ -230,7 +232,7 @@ class AuthService: ObservableObject {
         
         ref.putData(imageData, metadata: metadata) { [weak self] _, error in
             if let error = error {
-                print("❌ Feil ved opplasting av bilde:", error)
+                print(" Feil ved opplasting av bilde:", error)
                 DispatchQueue.main.async {
                     self?.authError = error.localizedDescription
                 }
@@ -240,7 +242,7 @@ class AuthService: ObservableObject {
             
             ref.downloadURL { url, error in
                 if let error = error {
-                    print("❌ Feil ved henting av downloadURL:", error)
+                    print(" Feil ved henting av downloadURL:", error)
                     DispatchQueue.main.async {
                         self?.authError = error.localizedDescription
                     }
@@ -281,6 +283,31 @@ class AuthService: ObservableObject {
                 }
             }
         }
+    }
+    
+    @discardableResult
+    func addBooking(from: String, to: String, pickupTime: Date, note: String? = nil) -> SvippBooking? {
+        guard let user = user else { return nil }
+        
+        let booking = SvippBooking(
+            id: UUID().uuidString,
+            userId: user.uid,
+            fromAddress: from,
+            toAddress: to,
+            pickupTime: pickupTime,
+            createdAt: Date(),
+            note: note
+        )
+        
+        
+        bookings.append(booking)
+        return booking
+    }
+    
+    // 🔹 NY: Slette booking
+    func deleteBooking(_ booking: SvippBooking) {
+        bookings.removeAll { $0.id == booking.id }
+        
     }
     
     // MARK: - Sjåfører (global "drivers"-collection)

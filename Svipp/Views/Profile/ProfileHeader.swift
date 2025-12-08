@@ -1,6 +1,6 @@
 import SwiftUI
-import PhotosUI   // 👈 for PhotosPickerItem + PhotosPicker
-import UIKit      // 👈 for UIImage
+import PhotosUI
+import UIKit
 
 // MARK: - Header (bilde + navn)
 
