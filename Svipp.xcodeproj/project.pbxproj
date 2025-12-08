@@ -7,19 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80ACEF932EE1B342005F7F65 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 80ACEF922EE1B342005F7F65 /* FirebaseAnalyticsCore */; };
-		80ACEF952EE1B342005F7F65 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 80ACEF942EE1B342005F7F65 /* FirebaseAuth */; };
-		80ACEF972EE1B342005F7F65 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 80ACEF962EE1B342005F7F65 /* FirebaseFirestore */; };
-		80ACEF992EE1B342005F7F65 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 80ACEF982EE1B342005F7F65 /* FirebaseStorage */; };
+		173BC32B2EE1B34E00385250 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC32A2EE1B34E00385250 /* FirebaseAnalyticsCore */; };
+		173BC32D2EE1B34E00385250 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC32C2EE1B34E00385250 /* FirebaseAuth */; };
+		173BC32F2EE1B34E00385250 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC32E2EE1B34E00385250 /* FirebaseFirestore */; };
+		173BC3312EE1B34E00385250 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 173BC3302EE1B34E00385250 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A2CF8C662EDE1E47007B197B /* Svipp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Svipp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		179713732EE6BA1000C94373 /* Exceptions for "Svipp" folder in "Svipp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A2CF8C652EDE1E47007B197B /* Svipp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A2CF8C682EDE1E47007B197B /* Svipp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				179713732EE6BA1000C94373 /* Exceptions for "Svipp" folder in "Svipp" target */,
+			);
 			path = Svipp;
 			sourceTree = "<group>";
 		};
@@ -30,10 +43,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80ACEF932EE1B342005F7F65 /* FirebaseAnalyticsCore in Frameworks */,
-				80ACEF992EE1B342005F7F65 /* FirebaseStorage in Frameworks */,
-				80ACEF952EE1B342005F7F65 /* FirebaseAuth in Frameworks */,
-				80ACEF972EE1B342005F7F65 /* FirebaseFirestore in Frameworks */,
+				173BC32B2EE1B34E00385250 /* FirebaseAnalyticsCore in Frameworks */,
+				173BC3312EE1B34E00385250 /* FirebaseStorage in Frameworks */,
+				173BC32D2EE1B34E00385250 /* FirebaseAuth in Frameworks */,
+				173BC32F2EE1B34E00385250 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,10 +89,10 @@
 			);
 			name = Svipp;
 			packageProductDependencies = (
-				80ACEF922EE1B342005F7F65 /* FirebaseAnalyticsCore */,
-				80ACEF942EE1B342005F7F65 /* FirebaseAuth */,
-				80ACEF962EE1B342005F7F65 /* FirebaseFirestore */,
-				80ACEF982EE1B342005F7F65 /* FirebaseStorage */,
+				173BC32A2EE1B34E00385250 /* FirebaseAnalyticsCore */,
+				173BC32C2EE1B34E00385250 /* FirebaseAuth */,
+				173BC32E2EE1B34E00385250 /* FirebaseFirestore */,
+				173BC3302EE1B34E00385250 /* FirebaseStorage */,
 			);
 			productName = Svipp;
 			productReference = A2CF8C662EDE1E47007B197B /* Svipp.app */;
@@ -110,7 +123,7 @@
 			mainGroup = A2CF8C5D2EDE1E47007B197B;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				80ACEF912EE1B211005F7F65 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A2CF8C672EDE1E47007B197B /* Products */;
@@ -340,7 +353,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		80ACEF912EE1B211005F7F65 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
@@ -351,24 +364,24 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		80ACEF922EE1B342005F7F65 /* FirebaseAnalyticsCore */ = {
+		173BC32A2EE1B34E00385250 /* FirebaseAnalyticsCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 80ACEF912EE1B211005F7F65 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalyticsCore;
 		};
-		80ACEF942EE1B342005F7F65 /* FirebaseAuth */ = {
+		173BC32C2EE1B34E00385250 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 80ACEF912EE1B211005F7F65 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
 		};
-		80ACEF962EE1B342005F7F65 /* FirebaseFirestore */ = {
+		173BC32E2EE1B34E00385250 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 80ACEF912EE1B211005F7F65 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
 		};
-		80ACEF982EE1B342005F7F65 /* FirebaseStorage */ = {
+		173BC3302EE1B34E00385250 /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 80ACEF912EE1B211005F7F65 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 173BC3292EE1B34E00385250 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
