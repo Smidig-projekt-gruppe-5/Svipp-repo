@@ -178,7 +178,8 @@ struct ReviewCard: View {
 struct DriverProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            DriverProfileView(driver: .previewDriver)
+            DriverProfileView(driver: DriverInfoData.all[1])
         }
     }
 }
+

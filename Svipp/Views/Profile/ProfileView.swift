@@ -1,17 +1,23 @@
 import SwiftUI
-import PhotosUI
-import UIKit
-
-// MARK: - Hovedview
 
 struct ProfileView: View {
     @EnvironmentObject var authService: AuthService
+    
+    @State private var showFavorites = false
+    @State private var favoriteDriverIDs: Set<String> = []   // ❤️ favoritter
+
+    private var favoriteDrivers: [DriverInfo] {
+        authService.previousDrivers.filter { favoriteDriverIDs.contains($0.id) }
+    }
     
     var body: some View {
         let profile = authService.currentUserProfile
         
         VStack(spacing: 0) {
-         ProfileTopBar()
+            ProfileTopBar {
+                showFavorites = true
+            }
+            
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
                     ProfileHeader(profile: profile)
@@ -22,38 +28,37 @@ struct ProfileView: View {
                         ProfileInfoSection(profile: profile)
                     }
 
-                    ProfileBookingsSection(
-                        bookings: authService.bookings,
-                        onDelete: { booking in
-                            authService.deleteBooking(booking)
-                        }
+                    ProfileTripsSection(
+                        drivers: authService.previousDrivers,
+                        favoriteDriverIDs: $favoriteDriverIDs
                     )
-
-
-                    ProfileTripsSection(drivers: authService.previousDrivers)
                     
                     Spacer(minLength: 0)
                     ProfileLogoutButton()
                 }
             }
         }
+        .sheet(isPresented: $showFavorites) {
+            FavoritesModalView(
+                isPresented: $showFavorites,
+                favoriteDrivers: favoriteDrivers
+            )
+            .presentationDetents([.fraction(0.65)])     // 25% lavere modal
+            .presentationDragIndicator(.visible)
+        }
         .onAppear {
             if let uid = authService.user?.uid,
                authService.currentUserProfile == nil {
                 authService.loadUserProfile(uid: uid)
             }
-            
-            // refresher historikk når du åpner profilen
+
             authService.loadPreviousDrivers()
         }
     }
-        
 }
-
 
 #Preview {
     NavigationStack {
-        ProfileView()
-            .environmentObject(AuthService.shared)
+        ProfileView().environmentObject(AuthService.shared)
     }
 }

@@ -7,6 +7,7 @@ struct DriverSummaryCard: View {
     let yearsExperience: String
     let price: String
     let imageName: String
+    var showPriceLabel: Bool = true
 
     var body: some View {
         HStack(spacing: 16) {
@@ -48,13 +49,21 @@ struct DriverSummaryCard: View {
 
             Spacer()
 
-            // Pris
-            Text(price)
-                .font(.title3)
-                .fontWeight(.bold)
+            // Pris (med valgfritt "Pris"-label)
+            VStack(alignment: .trailing, spacing: 2) {
+                if showPriceLabel {
+                    Text("Pris")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+
+                Text(price)
+                    .font(.title3)
+                    .fontWeight(.bold)
+            }
         }
         .padding()
-        .padding(.top,20)
+        .padding(.top, 20)
         .background(Color(.systemBackground))
     }
 }
@@ -68,7 +77,8 @@ struct DriverSummaryCard: View {
             address: "Oslo, gamlebyen 54",
             yearsExperience: "2 år – 235 turer",
             price: "555 kr",
-            imageName: "Tom"
+            imageName: "Tom",
+            showPriceLabel: true
         )
         .padding()
     }

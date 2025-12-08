@@ -7,80 +7,58 @@ struct DriverCard: View {
     let yearsExperience: String
     let price: String
     let imageName: String
-    
+    var showPriceLabel: Bool = true
+
     var body: some View {
         HStack(spacing: 12) {
-            // Bilde / placeholder
-            ZStack {
-                if let image = UIImage(named: imageName) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color("SvippMainColor"))
-                }
-            }
-            .frame(width: 56, height: 56)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 56, height: 56)
+                .clipShape(Circle())
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(name)
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(Color("SvippTextColor"))
-                    
+
                     Spacer()
-                    
+
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
-                            .font(.system(size: 12))
+                            .font(.system(size: 13))
+                            .foregroundColor(.yellow)
                         Text(rating)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.system(size: 13, weight: .semibold))
                     }
-                    .foregroundColor(.orange)
                 }
-                
+
                 Text(address)
                     .font(.system(size: 13))
                     .foregroundColor(.gray)
-                
+
                 Text(yearsExperience)
                     .font(.system(size: 12))
                     .foregroundColor(.gray)
             }
-            
+
             Spacer()
-            
-            // 👉 Pris her
+
             VStack(alignment: .trailing, spacing: 2) {
-                Text("Pris")
-                    .font(.system(size: 11))
-                    .foregroundColor(.gray)
-                
-                Text(price.isEmpty ? "–" : price)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(Color("SvippTextColor"))
+                if showPriceLabel {
+                    Text("Pris")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+
+                Text(price)
+                    .font(.system(size: 16, weight: .semibold))
             }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.svippAccent))
-                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-        )
+        .padding()
+        .background(Color(red: 0.98, green: 0.96, blue: 0.90))
+        .cornerRadius(18)
+        .shadow(radius: 2, y: 1)
     }
-}
-
-#Preview {
-    DriverCard(
-        name: "Natasha Brun",
-        rating: "4.6",
-        address: "Oslo sentrum",
-        yearsExperience: "3 år som sjåfør – 180 turer",
-        price: "663 kr",
-        imageName: "Tom"
-    )
 }

@@ -1,8 +1,8 @@
 import SwiftUI
 
-// MARK: - Top Bar
-
 struct ProfileTopBar: View {
+    let onFavoritesTapped: () -> Void
+
     var body: some View {
         HStack {
             NavigationLink(destination: SettingsView()) {
@@ -12,11 +12,11 @@ struct ProfileTopBar: View {
                     .padding(.leading, 12)
                     .padding(.vertical, 8)
             }
-            
+
             Spacer()
-            
-            ZStack {
-                PrimaryButton(text: "Favoritter") { }
+
+            PrimaryButton(text: "Favoritter") {
+                onFavoritesTapped()
             }
             .padding(.trailing, 12)
             .padding(.vertical, 8)
