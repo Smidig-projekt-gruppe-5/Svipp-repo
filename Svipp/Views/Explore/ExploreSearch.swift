@@ -6,7 +6,6 @@ struct ExploreSearch: View {
 
     var onSearch: () -> Void
     var onBooking: () -> Void
-    var onFilter: () -> Void
 
     var body: some View {
         VStack(spacing: 12) {
@@ -85,20 +84,6 @@ struct ExploreSearch: View {
                 .background(Color.svippMain)
                 .clipShape(Capsule())
             }
-
-            // Filter icon only
-            Button(action: onFilter) {
-                Image(systemName: "slider.horizontal.3")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 26, height: 26)
-                    .padding(10)
-                    .foregroundColor(Color.svippText)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.ultraThinMaterial)
-                    )
-            }
         }
     }
 }
@@ -109,7 +94,7 @@ struct ExploreSearch: View {
         toText: .constant("Kalfarlien 21, Bergen"),
         onSearch: {},
         onBooking: {},
-        onFilter: {}
+    
     )
     .padding()
 }

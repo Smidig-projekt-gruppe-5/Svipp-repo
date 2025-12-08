@@ -1,9 +1,3 @@
-//
-//  SvippCard.swift
-//  Svipp
-//
-//  Created by Kasper Espenes on 02/12/2025.
-//
 
 import SwiftUI
 

@@ -1,7 +1,8 @@
 import SwiftUI
 
-
 struct ProfileTripsSection: View {
+    let drivers: [DriverInfo]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Tidligere turer")
@@ -9,18 +10,33 @@ struct ProfileTripsSection: View {
                 .foregroundColor(Color("SvippTextColor"))
                 .padding(.horizontal)
             
-            VStack(spacing: 20) {
-                DriverCard(
-                    name: "Natasha Brun",
-                    rating: "4.6",
-                    address: "Oslo sentrum",
-                    yearsExperience: "3 år som sjåfør – 180 turer",
-                    price: "",
-                    imageName: "Tom"
-                )
+            VStack(spacing: 12) {
+                if drivers.isEmpty {
+                    Text("Ingen turer enda")
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
+                        .padding(.horizontal)
+                } else {
+                    ForEach(drivers) { driver in
+                        DriverCard(
+                            name: driver.name,
+                            rating: driver.rating,
+                            address: driver.address,
+                            yearsExperience: driver.experienceDisplay,
+                            price: driver.price,
+                            imageName: driver.imageName
+                        )
+                    }
+                }
             }
             .padding(.horizontal)
         }
         .padding(.top, 4)
+    }
+}
+
+#Preview {
+    ScrollView {
+        ProfileTripsSection(drivers: [])
     }
 }

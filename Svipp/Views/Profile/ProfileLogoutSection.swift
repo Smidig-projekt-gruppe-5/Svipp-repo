@@ -18,7 +18,7 @@ struct ProfileLogoutButton: View {
                         .stroke(Color.red.opacity(0.4), lineWidth: 1)
                 )
                 .padding(.horizontal)
-                .padding(.bottom, 20)
+                .padding(.bottom, 50)
         }
     }
 }

@@ -4,6 +4,7 @@ import MapKit
 struct ExploreView: View {
     @State private var fromText: String = "Min posisjon"
     @State private var toText: String = ""
+    @State private var showFilter = false
     
     // Modal-states
     @State private var showDriverList = false
@@ -29,8 +30,7 @@ struct ExploreView: View {
                     fromText: $fromText,
                     toText: $toText,
                     onSearch: {},
-                    onBooking: {},
-                    onFilter: {}
+                    onBooking: {}
                 )
 
                 Button {
@@ -68,6 +68,7 @@ struct ExploreView: View {
                             showDriverOrder = true
                         }
                     }
+                  
                 }
             )
             .zIndex(1)

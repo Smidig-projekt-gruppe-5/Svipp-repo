@@ -11,7 +11,7 @@ struct PickUpModal: View {
 
     @State private var isCalling = false
     @State private var secondsLeft: Int = 30
-    @State private var countdownTimer: Timer? = nil   // 👈 så vi kan stoppe den
+    @State private var countdownTimer: Timer? = nil
 
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
@@ -21,7 +21,6 @@ struct PickUpModal: View {
     var body: some View {
         ZStack(alignment: .top) {
 
-            // Kart
             Map(coordinateRegion: $region)
                 .ignoresSafeArea()
 
@@ -40,25 +39,22 @@ struct PickUpModal: View {
             }
             .padding(.horizontal, 16)
 
-            // 📞 Calling overlay
             if isCalling {
                 callingOverlay
             }
         }
         .onAppear {
-            secondsLeft = 30                 // reset hver gang modalen åpnes
-            startCountdown()                 // ⏱ start nedtelling
+            secondsLeft = 30
+            startCountdown()
         }
         .onDisappear {
-            stopCountdown()                  // rydde opp hvis vi går bort
+            stopCountdown()
         }
         .navigationBarBackButtonHidden(true)
     }
 
-    // MARK: - NEDTELLING
-
+    // MARK: - Nedtelling
     private func startCountdown() {
-        // Unngå å lage flere timere
         if countdownTimer != nil { return }
 
         countdownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -172,8 +168,9 @@ struct PickUpModal: View {
                     .clipShape(Circle())
 
                 VStack(alignment: .leading) {
-                    Text(driver.name).font(.headline)
-                    Text(driver.yearsExperience)
+                    Text(driver.name)
+                        .font(.headline)
+                    Text(driver.experienceDisplay)
                         .foregroundColor(.secondary)
                 }
 
@@ -188,7 +185,6 @@ struct PickUpModal: View {
 
             HStack(spacing: 12) {
 
-                // 📞 Ring sjåfør (kun overlay)
                 Button {
                     withAnimation { isCalling = true }
 
@@ -211,10 +207,9 @@ struct PickUpModal: View {
 
                 Spacer()
 
-                //  Avbryt
                 Button {
                     onCancel?()
-                    stopCountdown()         //  stopp nedtellingen
+                    stopCountdown()
                     showTripCompleted = false
                     withAnimation { isPresented = false }
                 } label: {

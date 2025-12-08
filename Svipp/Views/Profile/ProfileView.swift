@@ -11,37 +11,37 @@ struct ProfileView: View {
         let profile = authService.currentUserProfile
         
         VStack(spacing: 0) {
-            ProfileTopBar()
-            
+         ProfileTopBar()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
                     ProfileHeader(profile: profile)
                     
-                    Divider()
-                        .padding(.horizontal)
+                    Divider().padding(.horizontal)
                     
                     if let profile {
                         ProfileInfoSection(profile: profile)
                     }
-                    
-                    ProfileTripsSection()
+
+                    ProfileTripsSection(drivers: authService.previousDrivers)
                     
                     Spacer(minLength: 0)
+                    ProfileLogoutButton()
                 }
             }
-            
-            ProfileLogoutButton()
         }
-        .padding(.bottom, 50)
-        .background(Color.white.ignoresSafeArea())
         .onAppear {
             if let uid = authService.user?.uid,
                authService.currentUserProfile == nil {
                 authService.loadUserProfile(uid: uid)
             }
+            
+            // refresher historikk når du åpner profilen
+            authService.loadPreviousDrivers()
         }
     }
+        
 }
+
 
 #Preview {
     NavigationStack {

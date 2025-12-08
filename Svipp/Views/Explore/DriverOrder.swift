@@ -55,7 +55,7 @@ struct DriverOrder: View {
                             name: driver.name,
                             rating: driver.rating,
                             address: driver.address,
-                            yearsExperience: driver.yearsExperience,
+                            yearsExperience: driver.experienceDisplay,   // 👈 ny
                             price: driver.price,
                             imageName: driver.imageName
                         )
@@ -164,7 +164,6 @@ struct DriverOrder: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 90)
-
             }
         }
     }
@@ -176,19 +175,15 @@ struct DriverOrder: View {
         showDriverList: .constant(false),
         showPickUp: .constant(false),
         driver: DriverInfo(
+            id: UUID().uuidString,
             name: "Tom Nguyen",
             rating: "4.8",
             address: "Oslo, Gamlebyen 54",
-            yearsExperience: "2 år – 235 turer",
+            experienceYears: 2,
+            totalTrips: 235,
             price: "555 kr",
             imageName: "Tom",
-            
-            age: nil,
-            employmentDate: nil,
-            tripCount: nil,
-            about: nil,
-            reviews: nil,
-            
+            lastTripAt: "2025-09-12T10:00:00"
         )
     )
 }
