@@ -13,5 +13,5 @@ Brukeren parkerer bilen utenfor et utested, restaurant eller arrangement, og via
 
 Tjenesten er utviklet for situasjoner hvor man ønsker fleksibilitet og trygg transport hjem – spesielt når man har drukket alkohol, blitt syk, er for trøtt til å kjøre, eller bare vil slippe å hente bilen dagen etter.
 
-Svipp kombinerer tilgjengelighet, sikkerhet og bærekraft, og gjør det enkelt å ta ansvarlige valg samtidig som bilen kommer hjem uten stress eller komplikasjoner.
+Svipp kombinerer tilgjengelighet, sikkerhet og bærekraft, og gjør det enkelt å ta ansvarlige valg samtidig som bilen kommer hjem uten stress eller komplikasjoner. 1111
 """
