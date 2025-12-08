@@ -19,6 +19,7 @@ class ExploreViewModel: ObservableObject {
     private let autocompleteService = AutocompleteService()
     private let apiService = ApiService()
     
+
     // 🔑 Henter lagrede sjåfører fra AuthService
     private let authService: AuthService
     
@@ -26,7 +27,7 @@ class ExploreViewModel: ObservableObject {
         self.authService = authService
     }
     
-    // MARK: - Autocomplete
+
     func searchAutocomplete() async {
         guard !query.isEmpty else {
             suggestions = []
@@ -89,4 +90,6 @@ class ExploreViewModel: ObservableObject {
         
         isLoading = false
     }
+    
+    
 }

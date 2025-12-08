@@ -18,7 +18,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A230FDF22EE6B665003DF4E8 /* Exceptions for "Svipp" folder in "Svipp" target */ = {
+		179713732EE6BA1000C94373 /* Exceptions for "Svipp" folder in "Svipp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -31,7 +31,7 @@
 		A2CF8C682EDE1E47007B197B /* Svipp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A230FDF22EE6B665003DF4E8 /* Exceptions for "Svipp" folder in "Svipp" target */,
+				179713732EE6BA1000C94373 /* Exceptions for "Svipp" folder in "Svipp" target */,
 			);
 			path = Svipp;
 			sourceTree = "<group>";
