@@ -22,7 +22,7 @@ struct SvippApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()                     // 👈 VIKTIG: IKKE MainView her
+            RootView()               
                 .environmentObject(authService)
         }
     }

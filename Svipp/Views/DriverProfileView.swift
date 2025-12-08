@@ -1,10 +1,3 @@
-//
-//  FavoriteView.swift
-//  Svipp
-//
-//  Created by Kasper Espenes on 04/12/2025.
-//
-
 import SwiftUI
 
 struct DriverProfileView: View {
@@ -25,6 +18,8 @@ struct DriverProfileView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                
+                // MARK: - Toppkort (bilde + navn + rating)
                 HStack(alignment: .top, spacing: 16) {
                     Image(driver.imageName)
                         .resizable()
@@ -41,14 +36,16 @@ struct DriverProfileView: View {
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                         
-                        Text(driver.yearsExperience)
-                            .font(.system(size: 13))
-                            .foregroundColor(.gray)
+                        if !driver.experienceDisplay.isEmpty {
+                            Text(driver.experienceDisplay)
+                                .font(.system(size: 13))
+                                .foregroundColor(.gray)
+                        }
                     }
                     
                     Spacer()
                     
-                    HStack(spacing: 4){
+                    HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
                             .font(.system(size: 14))
@@ -62,14 +59,17 @@ struct DriverProfileView: View {
                 .cornerRadius(16)
                 .shadow(radius: 2, y: 1)
                 
+                // MARK: - Info-seksjon
                 VStack(spacing: 12) {
                     Text("Informasjon")
                         .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(Color("SvippTextColor"))
                     
                     VStack(spacing: 4) {
                         if let employmentDate = driver.employmentDate {
                             Text("\(driver.name) har vært ansatt hos Svipp siden")
                             Text(employmentDate)
+                                .fontWeight(.semibold)
                         }
                         
                         if let tripCount = driver.tripCount {
@@ -77,11 +77,13 @@ struct DriverProfileView: View {
                         }
                     }
                     .font(.system(size: 14))
+                    .foregroundColor(Color("SvippTextColor"))
                     
-                    if let about = driver.about {
-                        Spacer()
+                    if let about = driver.about, !about.isEmpty {
+                        Spacer().frame(height: 4)
                         Text(about)
                             .font(.system(size: 14))
+                            .foregroundColor(.gray)
                             .multilineTextAlignment(.leading)
                             .padding(.top, 8)
                     }
@@ -92,6 +94,7 @@ struct DriverProfileView: View {
                 .cornerRadius(20)
                 .shadow(radius: 2, y: 1)
                 
+                // MARK: - Anmeldelser
                 if let reviews = driver.reviews, !reviews.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Anmeldelser")
@@ -105,11 +108,12 @@ struct DriverProfileView: View {
                     }
                 }
                 
+                // "Les flere"-knapp hvis det finnes flere enn 3
                 if let reviews = driver.reviews, reviews.count > 3 {
                     HStack {
                         Spacer()
                         Button {
-                        // TODO Naviger til full anmeldelsesliste
+                            // TODO: Naviger til full anmeldelsesliste
                         } label: {
                             HStack(spacing: 6) {
                                 Text("Les Flere")
@@ -145,7 +149,7 @@ struct ReviewCard: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(Color("SvippTextColor"))
                 
-                if let comment = review.comment {
+                if let comment = review.comment, !comment.isEmpty {
                     Text(comment)
                         .font(.system(size: 13))
                         .foregroundColor(.gray)
@@ -158,7 +162,7 @@ struct ReviewCard: View {
                 Image(systemName: "star.fill")
                     .font(.system(size: 13))
                     .foregroundColor(.yellow)
-                Text("\(review.rating)")
+                Text(String(format: "%.1f", review.rating))
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(Color("SvippTextColor"))
             }
@@ -174,7 +178,7 @@ struct ReviewCard: View {
 struct DriverProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            DriverProfileView(driver: DriverSamples.all[0])
+            DriverProfileView(driver: .previewDriver)
         }
     }
 }
