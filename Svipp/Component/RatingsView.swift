@@ -1,27 +1,24 @@
-//
-//  RatingsView.swift
-//  Svipp
-//
-//  Created by Hannan Moussa on 01/12/2025.
-//
-
 import SwiftUI
 
 struct StarRatingView: View {
-    var rating: Int
- 
+    @Binding var rating: Int        // Binding i stedet for vanlig var
+    let maxRating: Int = 5
     
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(0..<5) { index in
-                Image(systemName: index < rating ? "star.fill" : "star")
+            ForEach(1...maxRating, id: \.self) { index in
+                Image(systemName: index <= rating ? "star.fill" : "star")
                     .resizable()
                     .scaledToFit()
+                    .frame(height: 24)
                     .foregroundColor(
-                        index < rating
+                        index <= rating
                         ? .yellow
                         : Color("SvippTextColor").opacity(0.8)
                     )
+                    .onTapGesture {
+                        rating = index   // Oppdater rating når man trykker
+                    }
             }
         }
     }
@@ -29,8 +26,16 @@ struct StarRatingView: View {
 
 #Preview {
     VStack(spacing: 20) {
-        StarRatingView(rating: 1)
+        StatefulStarRatingPreview()
             .frame(height: 20)
     }
     .padding()
+}
+
+struct StatefulStarRatingPreview: View {
+    @State private var rating: Int = 1
+    
+    var body: some View {
+        StarRatingView(rating: $rating)
+    }
 }

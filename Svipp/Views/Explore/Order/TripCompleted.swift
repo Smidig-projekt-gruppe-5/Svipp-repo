@@ -1,9 +1,8 @@
-
 import SwiftUI
 
 struct TripCompleted: View {
     @Binding var isPresented: Bool
-    
+    @State private var rating: Int = 0
     
     var body: some View {
         VStack(spacing: 24) {
@@ -12,7 +11,6 @@ struct TripCompleted: View {
                     .font(.title3.bold())
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color("SvippTextColor"))
-                
             }
             
             VStack(spacing: 4) {
@@ -22,22 +20,35 @@ struct TripCompleted: View {
                 
                 Text("Gi sjåføren en vurdering")
                     .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .foregroundColor(Color("SvippTextColor"))
+                    .foregroundColor(Color("SvippTextColor").opacity(0.8))
             }
             
-            // Stjerner
+            // ⭐️ Stjerner
+            StarRatingView(rating: $rating)
+                .frame(height: 24)
+                .padding(.top, 4)
             
-            
-            // "Kanskje senere"-knapp
-            SecondaryButton(text: "Kanskje senere") {
-                withAnimation {
-                    isPresented = false
+            if rating > 0 {
+                PrimaryButton(text: "Send inn") {
+                    withAnimation {
+                        print("Rating sendt: \(rating)")
+                        isPresented = false
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
+                
+            } else {
+                SecondaryButton(text: "Kanskje senere") {
+                    withAnimation {
+                        isPresented = false
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
             }
-            .frame(maxWidth: .infinity)   // gjør at knappen strekker seg fint
-            .padding(.top, 8)
         }
+        .padding()
     }
 }
 
