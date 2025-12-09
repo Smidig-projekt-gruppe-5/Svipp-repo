@@ -1,43 +1,70 @@
-**SVIPP**
+# **SVIPP**
 
+## **Konseptet**
+SVIPP er en app-basert tjeneste som sørger for at både du og bilen din kommer trygt hjem når du ikke kan kjøre selv.  
+En sjåfør sykler til kunden på en sammenleggbar el-sykkel, legger sykkelen i bagasjerommet, kjører kunden og bilen hjem og sykler videre til neste oppdrag.  
+Dette gjør tjenesten både praktisk, sikker og miljøvennlig.
 
+---
 
-Konseptet 
+# **Hovedfunksjoner**
+- Bestilling av sjåfør direkte fra appen  
+- Sjåfører ankommer på miljøvennlig måte (el-sykkel / el-sparkesykkel)  
+- Sjåføren kjører kunden og bilen til ønsket destinasjon  
+- Dynamisk prising basert på avstand og tilgjengelighet  
+- Vurdering av tur og sjåfør etter fullført oppdrag  
+- Profilside for bruker  
+- Oversikt over tidligere turer  
+- Favorittsjåfører  
+- Sikker innlogging og brukerhåndtering (Firebase Authentication)
 
-SVIPP er en app-basert tjeneste som sikrer at både du og bilen din kommer trygt hjem når du ikke kan kjøre selv.
-En sjåfør sykler til kunden på en sammenleggbar el-sykkel, legger sykkelen i bagasjerommet, kjører kunden og bilen hjem, 
-og sykler videre til neste oppdrag. Dette gir en effektiv og miljøvennlig drift.
+---
+# **Requirements**
 
+macOS med Xcode 15 eller nyere
 
-**Hovedfunksjoner
+iOS 17+ simulator eller fysisk enhet
 
-->  Bestilling av sjåfør via app
-->  Sjåfører ankommer på en miljøvennligmåte (sammenleggbar el-sykkel/el-sparkesykkel)
--> Sjåføren kjører kunden og bilen til ønsket destinasjon (som regel hjem)
--> Dynamisk prising basert på sjåfør-radius
--> Vurdering av helhetligheten av turen og sjåføren
--> Profilside
--> Oversikt over tidligere turer
--> Favorittsjåfører
--> Trygg innlogging og brukerhåndtering
+Pod installert (hvis prosjektet bruker CocoaPods)
 
+Følgende Firebase-pakker må installeres gjennom Swift Package Manager:
 
-**Installation
+FirebaseAuth
 
-Clone the repository
+FirebaseCore
 
-For å bruke appen, start med å klone prosjektet og åpne det i Xcode.
+FirebaseFirestore (hvis database brukes)
 
-# Gå til skrivebordet eller ønsket mappe
+FirebaseStorage (hvis bildelagring brukes)
+
+# **Installation**
+
+## **1. Clone repository**
+
+Åpne terminalen og naviger til ønsket mappe:
+
+```bash
 cd ~/Desktop
+``` 
+Klon prosjektet:
+```bash
 
-# Klon Svipp-prosjektet fra riktig GitHub-repo
 git clone https://github.com/Smidig-projekt-gruppe-5/Svipp-repo.git
+``` 
 
-# Gå inn i prosjektmappen
+Gå deretter inn i prosjektmappen:
+```bash
+
 cd Svipp-repo
-
-
-Open the project in Xcode
-
+``` 
+2. Open the project in Xcode
 open Svipp.xcodeproj
+
+
+**Brukernavn og passord:**
+
+E-post: admin@hotmail.com 
+
+Passord: passord
+
+(Kan også lage sin egen profil) 
