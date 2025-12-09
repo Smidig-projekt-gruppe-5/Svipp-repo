@@ -3,7 +3,7 @@ import SwiftUI
 
 @MainActor
 class ExploreViewModel: ObservableObject {
-
+    
     @Published var query: String = ""
     @Published var suggestions: [AutocompleteSuggestion] = []
     
@@ -19,18 +19,16 @@ class ExploreViewModel: ObservableObject {
     private let autocompleteService = AutocompleteService()
     private let apiService = ApiService()
     
-    // 🔑 Henter lagrede sjåfører fra AuthService
+    // Lagrede sjåfører
     private let authService: AuthService
     
     init(authService: AuthService = .shared) {
         self.authService = authService
-        // Last inn sjåfører ved oppstart
         loadDrivers()
     }
     
-    // MARK: - Last inn sjåfører fra DriverInfoData
     func loadDrivers() {
-        // Hent ALLE hardkodede sjåfører fra DriverInfoData
+        // Hent ALLE hardkodede sjåfører
         self.drivers = DriverInfoData.all
     }
     
@@ -56,9 +54,7 @@ class ExploreViewModel: ObservableObject {
         self.suggestions = []
     }
     
-    // MARK: - Bygg sjåfører tilknyttet places
     func buildDriversFromPlaces() {
-        // Bruk ALLE hardkodede sjåfører fra DriverInfoData
         var available = DriverInfoData.all
         
         guard !available.isEmpty else {
@@ -68,17 +64,13 @@ class ExploreViewModel: ObservableObject {
         
         available.shuffle()
         
-        // Antall sjåfører skal matche antall steder fra API
         let count = min(places.count, available.count)
         
-        // Klipp listen slik at de matcher
         let sliced = Array(available.prefix(count))
         
-        // Resultatet
         self.drivers = sliced
     }
     
-    // MARK: - Hent steder + match med sjåfører
     func fetchPlaces(lat: Double, lon: Double, category: String) async {
         isLoading = true
         errorMessage = nil
@@ -92,7 +84,6 @@ class ExploreViewModel: ObservableObject {
             
             self.places = result
             
-            // places → sjåfører
             self.buildDriversFromPlaces()
             
         } catch {

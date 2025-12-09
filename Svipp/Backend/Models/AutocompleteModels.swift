@@ -12,23 +12,19 @@ struct AutocompleteSuggestion: Codable, Identifiable {
     let properties: AutocompleteProperties
     let geometry: AutocompleteGeometry
     
-    // 🔥 Custom coding keys - fortell Swift at id ikke finnes i JSON
     enum CodingKeys: String, CodingKey {
         case properties
         case geometry
     }
     
-    // 🔥 Custom initializer fra JSON
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.properties = try container.decode(AutocompleteProperties.self, forKey: .properties)
         self.geometry = try container.decode(AutocompleteGeometry.self, forKey: .geometry)
         
-        // Generer id fra koordinater eller formatted adresse
         self.id = UUID().uuidString
     }
     
-    // 🔥 For manuell oppretting (ikke fra JSON)
     init(id: String = UUID().uuidString, properties: AutocompleteProperties, geometry: AutocompleteGeometry) {
         self.id = id
         self.properties = properties
@@ -38,7 +34,7 @@ struct AutocompleteSuggestion: Codable, Identifiable {
 
 struct AutocompleteGeometry: Codable {
     let coordinates: [Double]
-
+    
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(
             latitude: coordinates[1],
@@ -47,7 +43,6 @@ struct AutocompleteGeometry: Codable {
     }
 }
 
-// Info om adressen
 struct AutocompleteProperties: Codable {
     let formatted: String?
     let address_line1: String?

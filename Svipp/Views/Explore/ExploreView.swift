@@ -8,19 +8,16 @@ struct ExploreView: View {
     @State private var toText: String = ""
     @State private var showFilter = false
     
-    // Modal-states
     @State private var showDriverList = false
     @State private var showDriverOrder = false
     @State private var showPickUp = false
     @State private var showTripCompleted = false
     @State private var selectedDriver: DriverInfo? = nil
     
-    // Booking
     @State private var showBooking = false
     @State private var bookingDate = Date()
     @State private var showBookingConfirmation = false
     
-    // Autocomplete
     @StateObject private var viewModel = ExploreViewModel()
     
     @State private var region = MKCoordinateRegion(
@@ -31,18 +28,16 @@ struct ExploreView: View {
     var body: some View {
         ZStack(alignment: .top) {
             
-            // Kart
             Map(coordinateRegion: $region)
                 .ignoresSafeArea()
             
             VStack(spacing: 12) {
                 
-                // Søk + autocomplete
                 ExploreSearch(
                     fromText: $fromText,
                     toText: $toText,
                     onSearch: {
-                        // Når brukeren søker, vis ALLTID sjåfører fra DriverInfoData.all
+                        //Driverlisten kommer alltid opp
                         withAnimation {
                             showDriverList = true
                         }
@@ -70,10 +65,8 @@ struct ExploreView: View {
             MapZoomControls(region: $region, bottomPadding: 100)
                 .zIndex(0)
             
-            // Første modal – velg sjåfør (med ALLE sjåfører fra DriverInfoData.all)
             DriverList(
                 isPresented: $showDriverList,
-                //drivers: viewModel.drivers, // 🔥 Sender inn ALLE hardkodede sjåfører
                 onSelect: { driver in
                     selectedDriver = driver
                     showDriverList = false
@@ -85,7 +78,6 @@ struct ExploreView: View {
             )
             .zIndex(1)
             
-            // Andre modal – bestill
             if let selectedDriver {
                 DriverOrder(
                     isPresented: $showDriverOrder,
@@ -96,7 +88,6 @@ struct ExploreView: View {
                 .zIndex(2)
             }
             
-            // Tredje skjerm – sjåfør på vei
             if let selectedDriver, showPickUp {
                 PickUpModal(
                     isPresented: $showPickUp,
@@ -109,7 +100,6 @@ struct ExploreView: View {
             }
         }
         
-        // Booking-sheet
         .sheet(isPresented: $showBooking) {
             BookingView(
                 fromAddress: fromText,
@@ -127,7 +117,6 @@ struct ExploreView: View {
             }
         }
         
-        // Fullskjerm – tur ferdig
         .fullScreenCover(isPresented: $showTripCompleted) {
             TripCompleted(isPresented: $showTripCompleted)
         }
@@ -139,17 +128,15 @@ struct ExploreView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Last inn sjåfører når viewet vises
+            // Last inn sjåfører
             viewModel.loadDrivers()
         }
     }
     
-    // MARK: - Når et autocomplete-forslag velges
     private func handleSelect(_ suggestion: AutocompleteSuggestion) {
         toText = suggestion.properties.formatted ?? ""
         viewModel.suggestions = []
         
-        // Flytt kartet
         let coord = suggestion.geometry.coordinate
         withAnimation {
             region = MKCoordinateRegion(

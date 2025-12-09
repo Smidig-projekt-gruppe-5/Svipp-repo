@@ -1,21 +1,14 @@
-//
-//  AutocompleteService.swift
-//  Svipp
-//
-//  Created by Hannan Moussa on 03/12/2025.
-//
-
 import Foundation
 
 class AutocompleteService {
-
+    
     private var apiKey: String {
         guard let key = Bundle.main.infoDictionary?["GEOAPIFY_API_KEY"] as? String else {
             fatalError("Fant ikke API-nøkkel")
         }
         return key
     }
-
+    
     func autocomplete(query: String) async throws -> [AutocompleteSuggestion] {
         let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
         

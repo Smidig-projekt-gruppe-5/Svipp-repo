@@ -7,7 +7,6 @@ struct ExploreSearch: View {
     var onSearch: () -> Void
     var onBooking: () -> Void
     
-    // 🔥 NYTT – autocomplete
     var suggestions: [AutocompleteSuggestion] = []
     var onSelectSuggestion: ((AutocompleteSuggestion) -> Void)? = nil
     
@@ -19,11 +18,9 @@ struct ExploreSearch: View {
     }
     
     
-    // MARK: - Søke-kortet
     private var searchCard: some View {
         VStack(spacing: 0) {
             
-            // Fra
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Fra:")
@@ -40,7 +37,6 @@ struct ExploreSearch: View {
             
             Divider()
             
-            // Til
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Til:")
@@ -62,7 +58,6 @@ struct ExploreSearch: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
             
-            // 🔥 AUTOCOMPLETE-LISTE (kun UI overlay, påvirker ikke sjåfører)
             if !suggestions.isEmpty {
                 VStack(spacing: 0) {
                     ForEach(suggestions) { suggestion in
@@ -101,7 +96,6 @@ struct ExploreSearch: View {
         .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 2)
     }
     
-    // MARK: - Booking / filter / tidsvalg
     private var timeRow: some View {
         HStack(spacing: 12) {
             Button(action: onBooking) {
