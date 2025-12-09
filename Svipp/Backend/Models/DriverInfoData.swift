@@ -67,6 +67,32 @@ struct DriverInfo: Identifiable, Codable, Equatable {
 }
 
 
+extension DriverInfo {
+    /// Henter rating som en spesifikk bruker (navn) har gitt denne sjåføren
+    func ratingGivenBy(userName: String) -> Int? {
+        guard let reviews = reviews else { return nil }
+        guard let review = reviews.first(where: { $0.reviewerName == userName }) else {
+            return nil
+        }
+        return Int(review.rating.rounded())
+    }
+    
+    var lastTripDate: Date? {
+           ISO8601DateFormatter().date(from: lastTripAt)
+       }
+    
+    /// Formatert dato fra lastTripAt-ISO-string (hvis den finnes)
+    var lastTripFormatted: String {
+        let formatter = ISO8601DateFormatter()
+        guard let date = formatter.date(from: lastTripAt) else { return "" }
+        
+        let out = DateFormatter()
+        out.dateFormat = "dd.MM.yyyy HH:mm"
+        return out.string(from: date)
+    }
+}
+
+
 // MARK: - FULL SAMPLE DATA
 
 enum DriverInfoData {

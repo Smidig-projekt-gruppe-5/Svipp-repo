@@ -118,7 +118,13 @@ struct ExploreView: View {
         }
         
         .fullScreenCover(isPresented: $showTripCompleted) {
-            TripCompleted(isPresented: $showTripCompleted)
+            if let driver = selectedDriver {
+                TripCompleted(isPresented: $showTripCompleted, driver: driver)
+             
+            } else {
+               
+                Text("Noe gikk galt – fant ikke sjåfør")
+            }
         }
         
         .alert("Booking bekreftet", isPresented: $showBookingConfirmation) {

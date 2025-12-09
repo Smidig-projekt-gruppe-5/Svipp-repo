@@ -426,3 +426,61 @@ class AuthService: ObservableObject {
         }
     }
 }
+
+extension AuthService {
+    func addReview(
+        for driver: DriverInfo,
+        rating: Int,
+        comment: String? = nil,
+        completion: ((Error?) -> Void)? = nil
+    ) {
+        guard let profile = currentUserProfile else {
+            print("Ingen innlogget profil – kan ikke legge til review")
+            completion?(NSError(
+                domain: "AuthService",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Ingen innlogget brukerprofil"]
+            ))
+            return
+        }
+        
+        let review = DriverReview(
+            reviewerName: profile.name,
+            reviewerAge: 0, // kan fylle inn fra profil om du har
+            rating: Double(rating),
+            comment: comment,
+            createdAt: Date()
+        )
+        
+        var updatedReviews = driver.reviews ?? []
+        updatedReviews.append(review)
+        
+        let updatedDriver = DriverInfo(
+            id: driver.id,
+            name: driver.name,
+            rating: driver.rating, // evt. oppdatere snittrating her
+            address: driver.address,
+            experienceYears: driver.experienceYears,
+            totalTrips: driver.totalTrips,
+            price: driver.price,
+            imageName: driver.imageName,
+            lastTripAt: driver.lastTripAt,
+            age: driver.age,
+            employmentDate: driver.employmentDate,
+            tripCount: driver.tripCount,
+            about: driver.about,
+            reviews: updatedReviews
+        )
+        
+        // Bruker eksisterende Firestore-logikk
+        updateDriver(updatedDriver) { [weak self] error in
+            if error == nil {
+                // Oppdater lokalt array også
+                if let index = self?.previousDrivers.firstIndex(where: { $0.id == driver.id }) {
+                    self?.previousDrivers[index] = updatedDriver
+                }
+            }
+            completion?(error)
+        }
+    }
+}
