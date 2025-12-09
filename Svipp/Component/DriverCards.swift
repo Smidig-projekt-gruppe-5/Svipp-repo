@@ -47,7 +47,7 @@ struct DriverCard: View {
 
             VStack(alignment: .trailing, spacing: 2) {
                 if showPriceLabel {
-                    Text("Pris")
+                    Text("Nok")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
