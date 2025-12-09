@@ -1,4 +1,4 @@
-SVIPP 
+**SVIPP**
 
 
 
@@ -9,7 +9,7 @@ En sjåfør sykler til kunden på en sammenleggbar el-sykkel, legger sykkelen i 
 og sykler videre til neste oppdrag. Dette gir en effektiv og miljøvennlig drift.
 
 
-Hovedfunksjoner
+**Hovedfunksjoner
 
 ->  Bestilling av sjåfør via app
 ->  Sjåfører ankommer på en miljøvennligmåte (sammenleggbar el-sykkel/el-sparkesykkel)
@@ -20,3 +20,24 @@ Hovedfunksjoner
 -> Oversikt over tidligere turer
 -> Favorittsjåfører
 -> Trygg innlogging og brukerhåndtering
+
+
+**Installation
+
+Clone the repository
+
+For å bruke appen, start med å klone prosjektet og åpne det i Xcode.
+
+# Gå til skrivebordet eller ønsket mappe
+cd ~/Desktop
+
+# Klon Svipp-prosjektet fra riktig GitHub-repo
+git clone https://github.com/Smidig-projekt-gruppe-5/Svipp-repo.git
+
+# Gå inn i prosjektmappen
+cd Svipp-repo
+
+
+Open the project in Xcode
+
+open Svipp.xcodeproj
