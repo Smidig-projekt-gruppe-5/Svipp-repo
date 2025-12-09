@@ -57,22 +57,26 @@ struct receiptRow: View {
 struct receiptActionButton: View {
     let systemImage: String
     let title: String
-    
+    let action: () -> Void      
+
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.system(size: 20, weight: .semibold))
-            
-            Text(title)
-                .font(.system(size: 18, weight: .semibold))
-            
-            Spacer()
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 20, weight: .semibold))
+                
+                Text(title)
+                    .font(.system(size: 18, weight: .semibold))
+                
+                Spacer()
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color(red: 0.98, green: 0.96, blue: 0.90))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 3)
         }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color(red: 0.98, green: 0.96, blue: 0.90))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 3)
+        .buttonStyle(.plain)
     }
 }
 

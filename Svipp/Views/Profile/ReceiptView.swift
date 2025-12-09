@@ -1,5 +1,17 @@
 import SwiftUI
 
+enum ReceiptFeedback: Identifiable {
+    case pdf
+    case email
+    
+    var id: Int {
+        switch self {
+        case .pdf: return 0
+        case .email: return 1
+        }
+    }
+}
+
 struct ReceiptView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var authService: AuthService
@@ -12,6 +24,8 @@ struct ReceiptView: View {
     let paymentMethod: String
     let dateString: String
     
+    @State private var feedbackType: ReceiptFeedback? = nil
+
     var body: some View {
         ZStack {
             Color(red: 0.98, green: 0.96, blue: 0.90).ignoresSafeArea()
@@ -85,18 +99,39 @@ struct ReceiptView: View {
                             receiptActionButton(
                                 systemImage: "arrow.down.circle",
                                 title: "Last ned som PDF"
-                            )
+                            ) {
+                                feedbackType = .pdf
+                            }
                             
                             receiptActionButton(
                                 systemImage: "envelope",
                                 title: "Send til e-post"
-                            )
+                            ) {
+                                feedbackType = .email
+                            }
                         }
                         .padding(.horizontal)
                         
                         Spacer(minLength: 32)
                     }
                 }
+            }
+        }
+        // 👇 Alert på selve viewet, ikke på ScrollView
+        .alert(item: $feedbackType) { type in
+            switch type {
+            case .pdf:
+                return Alert(
+                    title: Text("PDF lastet ned"),
+                    message: Text("Kvitteringen er lastet ned som PDF."),
+                    dismissButton: .default(Text("OK"))
+                )
+            case .email:
+                return Alert(
+                    title: Text("E-post sendt"),
+                    message: Text("Kvitteringen er sendt til e-postadressen din."),
+                    dismissButton: .default(Text("Supert!"))
+                )
             }
         }
     }
