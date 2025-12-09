@@ -10,10 +10,19 @@ struct ExploreSearch: View {
     var suggestions: [AutocompleteSuggestion] = []
     var onSelectSuggestion: ((AutocompleteSuggestion) -> Void)? = nil
     
+    // 🔥 NY CALLBACK
+    var onClearSuggestions: (() -> Void)? = nil
+    
     var body: some View {
         VStack(spacing: 12) {
             searchCard
             timeRow
+        }
+        // 🔥 Når man trykker på søkefeltområdet → skjul forslag
+        .onTapGesture {
+            withAnimation {
+                onClearSuggestions?()
+            }
         }
     }
     
@@ -49,7 +58,10 @@ struct ExploreSearch: View {
                 
                 Spacer()
                 
-                Button(action: onSearch) {
+                Button {
+                    onClearSuggestions?()   // 🔥 Skjul forslag når søk trykkes
+                    onSearch()
+                } label: {
                     Image(systemName: "magnifyingglass.circle.fill")
                         .font(.system(size: 26, weight: .medium))
                 }
@@ -62,7 +74,10 @@ struct ExploreSearch: View {
                 VStack(spacing: 0) {
                     ForEach(suggestions) { suggestion in
                         Button {
-                            onSelectSuggestion?(suggestion)
+                            withAnimation {
+                                onSelectSuggestion?(suggestion)
+                                onClearSuggestions?()   // 🔥 Skjul etter valg
+                            }
                         } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: "mappin.and.ellipse")
@@ -79,7 +94,6 @@ struct ExploreSearch: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 12)
                         }
-                        
                         Divider().padding(.leading, 40)
                     }
                 }
@@ -95,6 +109,7 @@ struct ExploreSearch: View {
         )
         .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 2)
     }
+    
     
     private var timeRow: some View {
         HStack(spacing: 12) {
@@ -125,7 +140,9 @@ struct ExploreSearch: View {
         fromText: .constant("Min posisjon"),
         toText: .constant("Kalfarlien 21"),
         onSearch: {},
-        onBooking: {}
+        onBooking: {},
+        suggestions: [],
+        onSelectSuggestion: nil,
+        onClearSuggestions: nil
     )
 }
-

@@ -1,4 +1,5 @@
 import Foundation
+import CoreLocation
 
 struct DriverInfo: Identifiable, Codable, Equatable {
     let id: String
@@ -11,14 +12,26 @@ struct DriverInfo: Identifiable, Codable, Equatable {
     let price: String
     let imageName: String
     let lastTripAt: String
-    
+
     // Ekstra info til profilview
     let age: Int?
     let employmentDate: String?
     let tripCount: Int?
     let about: String?
     let reviews: [DriverReview]?
-    
+
+    // MARK: - Legg til koordinater (Codable-kompatibelt)
+    var latitude: Double? = nil
+    var longitude: Double? = nil
+
+    // MARK: - Computed coordinate
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(
+            latitude: latitude ?? 0,
+            longitude: longitude ?? 0
+        )
+    }
+
     init(
         id: String = UUID().uuidString,
         name: String,
@@ -33,7 +46,9 @@ struct DriverInfo: Identifiable, Codable, Equatable {
         employmentDate: String? = nil,
         tripCount: Int? = nil,
         about: String? = nil,
-        reviews: [DriverReview]? = nil
+        reviews: [DriverReview]? = nil,
+        latitude: Double? = 0,
+        longitude: Double? = 0
     ) {
         self.id = id
         self.name = name
@@ -49,9 +64,10 @@ struct DriverInfo: Identifiable, Codable, Equatable {
         self.tripCount = tripCount
         self.about = about
         self.reviews = reviews
+        self.latitude = latitude
+        self.longitude = longitude
     }
-    
-    /// Tekst til UI, f.eks. "3 år – 180 turer"
+
     var experienceDisplay: String {
         switch (experienceYears, totalTrips) {
         case let (y?, t?):
@@ -66,26 +82,20 @@ struct DriverInfo: Identifiable, Codable, Equatable {
     }
 }
 
-
+// MARK: - Ekstra helpers
 extension DriverInfo {
-    /// Henter rating som en spesifikk bruker (navn) har gitt denne sjåføren
     func ratingGivenBy(userName: String) -> Int? {
-        guard let reviews = reviews else { return nil }
-        guard let review = reviews.first(where: { $0.reviewerName == userName }) else {
-            return nil
+        reviews?.first(where: { $0.reviewerName == userName }).map {
+            Int($0.rating.rounded())
         }
-        return Int(review.rating.rounded())
     }
-    
+
     var lastTripDate: Date? {
-           ISO8601DateFormatter().date(from: lastTripAt)
-       }
-    
-    /// Formatert dato fra lastTripAt-ISO-string (hvis den finnes)
+        ISO8601DateFormatter().date(from: lastTripAt)
+    }
+
     var lastTripFormatted: String {
-        let formatter = ISO8601DateFormatter()
-        guard let date = formatter.date(from: lastTripAt) else { return "" }
-        
+        guard let date = lastTripDate else { return "" }
         let out = DateFormatter()
         out.dateFormat = "dd.MM.yyyy HH:mm"
         return out.string(from: date)
