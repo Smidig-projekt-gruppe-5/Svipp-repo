@@ -56,15 +56,18 @@ Gå deretter inn i prosjektmappen:
 ```bash
 
 cd Svipp-repo
-``` 
+```
+
 2. Open the project in Xcode
 open Svipp.xcodeproj
 
 
-**Brukernavn og passord:**
+# **Testkonto**
+
+Du kan teste innlogging med følgende bruker:
 
 E-post: admin@hotmail.com 
 
 Passord: passord
 
-(Kan også lage sin egen profil) 
+ eller å velge å lage din en ny bruker 
