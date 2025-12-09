@@ -19,60 +19,72 @@ struct ExploreView: View {
     @State private var showBooking = false
     @State private var bookingDate = Date()
     @State private var showBookingConfirmation = false
-
+    
+    // Autocomplete
+    @StateObject private var viewModel = ExploreViewModel()
+    
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
-
+    
     var body: some View {
         ZStack(alignment: .top) {
-
-            // Bakgrunnskart
+            
+            // Kart
             Map(coordinateRegion: $region)
                 .ignoresSafeArea()
-
+            
             VStack(spacing: 12) {
+                
+                // Søk + autocomplete
                 ExploreSearch(
                     fromText: $fromText,
                     toText: $toText,
                     onSearch: {
-                        guard !toText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                            return
-                        }
+                        // Når brukeren søker, vis ALLTID sjåfører fra DriverInfoData.all
                         withAnimation {
                             showDriverList = true
                         }
                     },
-                    onBooking: {
-                        showBooking = true
+                    onBooking: { showBooking = true },
+                    suggestions: viewModel.suggestions,
+                    onSelectSuggestion: { suggestion in
+                        handleSelect(suggestion)
                     }
                 )
-
+                .onChange(of: toText) { newValue in
+                    viewModel.query = newValue
+                    Task {
+                        await viewModel.searchAutocomplete()
+                        print("Søker etter: \(newValue)")
+                        print("Antall alternativer: \(viewModel.suggestions.count)")
+                    }
+                }
+                
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-
+            
             MapZoomControls(region: $region, bottomPadding: 100)
                 .zIndex(0)
-
-            // Første modal – velg sjåfør
+            
+            // Første modal – velg sjåfør (med ALLE sjåfører fra DriverInfoData.all)
             DriverList(
                 isPresented: $showDriverList,
+                //drivers: viewModel.drivers, // 🔥 Sender inn ALLE hardkodede sjåfører
                 onSelect: { driver in
                     selectedDriver = driver
                     showDriverList = false
-
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation {
-                            showDriverOrder = true
-                        }
+                        withAnimation { showDriverOrder = true }
                     }
                 }
             )
             .zIndex(1)
-
+            
             // Andre modal – bestill
             if let selectedDriver {
                 DriverOrder(
@@ -83,7 +95,7 @@ struct ExploreView: View {
                 )
                 .zIndex(2)
             }
-
+            
             // Tredje skjerm – sjåfør på vei
             if let selectedDriver, showPickUp {
                 PickUpModal(
@@ -96,6 +108,7 @@ struct ExploreView: View {
                 .zIndex(3)
             }
         }
+        
         // Booking-sheet
         .sheet(isPresented: $showBooking) {
             BookingView(
@@ -103,30 +116,47 @@ struct ExploreView: View {
                 toAddress: toText,
                 bookingDate: $bookingDate
             ) { from, to, info in
-                // Her bruker du verdiene brukeren faktisk skrev inn
                 _ = authService.addBooking(
                     from: from,
                     to: to,
                     pickupTime: bookingDate
-                    // hvis du utvider modellen til å ha info/note kan du sende den også
                 )
                 
                 showBooking = false
                 showBookingConfirmation = true
             }
         }
-
-        // Fullskjerm for tur fullført
+        
+        // Fullskjerm – tur ferdig
         .fullScreenCover(isPresented: $showTripCompleted) {
             TripCompleted(isPresented: $showTripCompleted)
         }
-        // Bekreftelses-alert etter booking
+        
         .alert("Booking bekreftet", isPresented: $showBookingConfirmation) {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Vi har mottatt bookingen din. Du finner den under profilen din.")
         }
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            // Last inn sjåfører når viewet vises
+            viewModel.loadDrivers()
+        }
+    }
+    
+    // MARK: - Når et autocomplete-forslag velges
+    private func handleSelect(_ suggestion: AutocompleteSuggestion) {
+        toText = suggestion.properties.formatted ?? ""
+        viewModel.suggestions = []
+        
+        // Flytt kartet
+        let coord = suggestion.geometry.coordinate
+        withAnimation {
+            region = MKCoordinateRegion(
+                center: coord,
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+        }
     }
 }
 

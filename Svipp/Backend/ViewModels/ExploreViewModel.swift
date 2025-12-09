@@ -19,33 +19,47 @@ class ExploreViewModel: ObservableObject {
     private let autocompleteService = AutocompleteService()
     private let apiService = ApiService()
     
-
     // 🔑 Henter lagrede sjåfører fra AuthService
     private let authService: AuthService
     
     init(authService: AuthService = .shared) {
         self.authService = authService
+        // Last inn sjåfører ved oppstart
+        loadDrivers()
     }
     
-
+    // MARK: - Last inn sjåfører fra DriverInfoData
+    func loadDrivers() {
+        // Hent ALLE hardkodede sjåfører fra DriverInfoData
+        self.drivers = DriverInfoData.all
+    }
+    
     func searchAutocomplete() async {
         guard !query.isEmpty else {
             suggestions = []
             return
         }
         
+        print(" Kaller autocomplete API for: \(query)")
+        
         do {
             let result = try await autocompleteService.autocomplete(query: query)
             self.suggestions = result
+            print("Fikk \(result.count) forslag")
         } catch {
             print("Autocomplete error: \(error)")
         }
     }
     
+    func applySuggestion(_ suggestion: AutocompleteSuggestion) {
+        self.query = suggestion.properties.formatted ?? ""
+        self.suggestions = []
+    }
+    
     // MARK: - Bygg sjåfører tilknyttet places
     func buildDriversFromPlaces() {
-        // Bruk bare sjåfører som faktisk er lagret for brukeren
-        var available = authService.previousDrivers
+        // Bruk ALLE hardkodede sjåfører fra DriverInfoData
+        var available = DriverInfoData.all
         
         guard !available.isEmpty else {
             self.drivers = []
@@ -90,6 +104,4 @@ class ExploreViewModel: ObservableObject {
         
         isLoading = false
     }
-    
-    
 }

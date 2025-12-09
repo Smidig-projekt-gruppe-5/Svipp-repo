@@ -5,7 +5,7 @@ struct Modal<Content: View>: View {
     var title: String?
     var heightFraction: CGFloat
     let content: Content
-
+    
     init(
         isPresented: Binding<Bool>,
         title: String? = nil,
@@ -17,12 +17,12 @@ struct Modal<Content: View>: View {
         self.heightFraction = heightFraction
         self.content = content()
     }
-
+    
     var body: some View {
         GeometryReader { geometry in
             if isPresented {
                 ZStack(alignment: .bottom) {
-
+                    
                     // Mørk bakgrunn
                     Color.black.opacity(0.4)
                         .ignoresSafeArea()
@@ -31,20 +31,20 @@ struct Modal<Content: View>: View {
                                 isPresented = false
                             }
                         }
-
+                    
                     // Selve bottom sheet’en
                     VStack(spacing: 12) {
                         Capsule()
                             .fill(Color.gray.opacity(0.3))
                             .frame(width: 40, height: 5)
                             .padding(.top, 12)
-
+                        
                         if let title {
                             Text(title)
                                 .font(.headline)
                                 .padding(.bottom, 4)
                         }
-
+                        
                         content
                     }
                     .frame(height: geometry.size.height * heightFraction)
