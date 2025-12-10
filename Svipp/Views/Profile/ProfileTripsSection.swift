@@ -76,7 +76,7 @@ struct ProfileTripsSection: View {
                                 toggleFavorite(for: driver)
                             } label: {
                                 Image(systemName: favoriteDriverIDs.contains(driver.id) ? "heart.fill" : "heart")
-                                    .font(.system(size: 20))
+                                    .font(.system(size: 40))
                                     .foregroundColor(
                                         favoriteDriverIDs.contains(driver.id) ? .red : .gray
                                     )
