@@ -22,9 +22,11 @@ struct DriverPin: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
         }
+        .buttonStyle(.plain)   // 👈 VIKTIG for kart-annotations
         .background(Color("SvippAccent"))
         .clipShape(Capsule())
         .shadow(radius: 1)
+
     }
     
     

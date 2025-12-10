@@ -86,17 +86,20 @@ struct ExploreView: View {
                     case .user:
                         UserPin()
                             .zIndex(2000)
-
+                        
                     case .driver(let driver):
                         DriverPin(
                             imageName: driver.imageName,
                             priceText: driver.price
                         ) {
+                            // 👇 Rett til bestilling for denne sjåføren
                             selectedDriver = driver
-                            showDriverList = true
+                            showDriverOrder = true
                         }
-                        .scaleEffect(0.8) // litt mindre pin
+                        .scaleEffect(0.8)
                         .zIndex(1000)
+
+
                     }
                 }
             }
