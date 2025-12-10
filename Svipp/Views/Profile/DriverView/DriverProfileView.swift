@@ -149,7 +149,7 @@ struct ReviewCard: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(Color("SvippTextColor"))
                 
-                if let comment = review.comment, !comment.isEmpty {
+                if let comment = review.comment, !review.comment!.isEmpty {
                     Text(comment)
                         .font(.system(size: 13))
                         .foregroundColor(.gray)
@@ -182,4 +182,3 @@ struct DriverProfileView_Previews: PreviewProvider {
         }
     }
 }
-
