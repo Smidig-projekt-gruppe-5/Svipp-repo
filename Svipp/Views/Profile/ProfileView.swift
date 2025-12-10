@@ -28,7 +28,6 @@ struct ProfileView: View {
                     if let profile {
                         ProfileInfoSection(profile: profile)
                         
-                        
                         ProfileBookingsSection(
                             bookings: authService.bookings,
                             onDelete: { booking in

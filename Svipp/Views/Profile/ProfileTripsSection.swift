@@ -59,10 +59,12 @@ struct ProfileTripsSection: View {
                                 imageName: driver.imageName,
                                 showPriceLabel: false,
                                 onTapDetails: {
-                                    // "Les mer" → samme som å trykke på kortet
                                     onSelectTrip(driver)
-                                }
+                                },
+                                showDetailsButton: false,
+                                rightPaddingForPrice: 30
                             )
+
                             .background(Color(red: 0.98, green: 0.96, blue: 0.90))
                             .cornerRadius(18)
                             .shadow(radius: 2, y: 1)

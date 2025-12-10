@@ -8,8 +8,9 @@ struct DriverCard: View {
     let price: String
     let imageName: String
     var showPriceLabel: Bool = true
-    
     let onTapDetails: () -> Void
+    var showDetailsButton: Bool = true
+    var rightPaddingForPrice: CGFloat = 0
     
     // 👇 Nytt: favoritt-støtte (valgfritt)
     var showsHeart: Bool = false
@@ -75,11 +76,14 @@ struct DriverCard: View {
                     
                     Text(price)
                         .font(.system(size: 16, weight: .semibold))
+                        .padding(.trailing, rightPaddingForPrice)
                     
-                    Button(action: onTapDetails) {
-                        Text("Les mer")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(Color("SvippTextColor"))
+                    if showDetailsButton {
+                        Button(action: onTapDetails) {
+                            Text("Les mer")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(Color("SvippTextColor"))
+                        }
                     }
                 }
             }
