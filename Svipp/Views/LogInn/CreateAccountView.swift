@@ -23,7 +23,7 @@ struct CreateAccountView: View {
                     .padding(.bottom, 8)
                 
                 VStack(spacing: 4) {
-                    Text("Lag Bruker")
+                    Text("Ny bruker")
                         .font(.system(size: 22, weight: .bold))
                         .foregroundColor(Color("SvippTextColor"))
                     
