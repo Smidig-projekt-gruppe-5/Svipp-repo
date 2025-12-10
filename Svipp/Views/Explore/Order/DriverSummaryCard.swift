@@ -52,7 +52,7 @@ struct DriverSummaryCard: View {
             // Pris (med valgfritt "Pris"-label)
             VStack(alignment: .trailing, spacing: 2) {
                 if showPriceLabel {
-                    Text("Pris")
+                    Text("Nok")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }

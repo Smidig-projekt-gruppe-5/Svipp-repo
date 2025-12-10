@@ -9,25 +9,30 @@ struct DriverCard: View {
     let imageName: String
     var showPriceLabel: Bool = true
 
+    // 👇 Nytt: favoritt-støtte (valgfritt)
+    var showsHeart: Bool = false
+    var isFavorite: Bool = false
+    var onToggleFavorite: (() -> Void)? = nil
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 14) {
+            // Bilde
             Image(imageName)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 56, height: 56)
                 .clipShape(Circle())
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+            // VENSTRE: navn, rating, adresse, erfaring
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
                     Text(name)
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(Color("SvippTextColor"))
 
-                    Spacer()
-
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
-                            .font(.system(size: 13))
+                            .font(.system(size: 12))
                             .foregroundColor(.yellow)
                         Text(rating)
                             .font(.system(size: 13, weight: .semibold))
@@ -45,20 +50,68 @@ struct DriverCard: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 2) {
-                if showPriceLabel {
-                    Text("Nok")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+            // HØYRE: NOK + pris + (valgfritt) hjerte
+            VStack(alignment: .trailing, spacing: 4) {
+ 
+                
+                if showsHeart, let onToggleFavorite {
+                    Button {
+                        onToggleFavorite()
+                    } label: {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .font(.system(size: 18))
+                            .foregroundColor(isFavorite ? .red : .gray)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.bottom,10)
                 }
 
-                Text(price)
-                    .font(.system(size: 16, weight: .semibold))
+
+                HStack(spacing: 8) {
+                    if showPriceLabel {
+                        Text("NOK")
+                            .font(.caption)
+                    }
+
+                    Text(price)
+                        .font(.system(size: 16, weight: .semibold))
+                }
             }
         }
-        .padding()
+        .padding(12)
         .background(Color(red: 0.98, green: 0.96, blue: 0.90))
         .cornerRadius(18)
-        .shadow(radius: 2, y: 1)
+        .shadow(color: .black.opacity(0.07), radius: 3, y: 1)
     }
+}
+
+#Preview {
+    DriverCard(
+        name: "Tom Nguyen",
+        rating: "4.8",
+        address: "Oslo, Gamlebyen 54",
+        yearsExperience: "2 år – 235 turer",
+        price: "555",
+        imageName: "Tom",
+        showPriceLabel: true,
+        showsHeart: true,
+        isFavorite: true,
+        onToggleFavorite: {}
+    )
+    .padding()
+    .background(Color.gray.opacity(0.2))
+}
+
+#Preview {
+    DriverCard(
+        name: "Tom Nguyen",
+        rating: "4.8",
+        address: "Oslo, Gamlebyen 54",
+        yearsExperience: "2 år – 235 turer",
+        price: "555",
+        imageName: "Tom",
+        showPriceLabel: true
+    )
+    .padding()
+    .background(Color.gray.opacity(0.2))
 }

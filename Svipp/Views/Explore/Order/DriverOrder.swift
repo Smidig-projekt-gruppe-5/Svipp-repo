@@ -26,9 +26,9 @@ private struct InfoRow: View {
 }
 
 struct DriverOrder: View {
-    @Binding var isPresented: Bool        // denne modalen
-    @Binding var showDriverList: Bool    // forrige modal
-    @Binding var showPickUp: Bool        // neste skjerm (PickUpModal)
+    @Binding var isPresented: Bool       
+    @Binding var showDriverList: Bool
+    @Binding var showPickUp: Bool
     
     let driver: DriverInfo
     
@@ -101,7 +101,7 @@ struct DriverOrder: View {
                                     
                                     InfoRow(
                                         systemImage: "coloncurrencysign.circle",
-                                        title: "Pris",
+                                        title: "Nok",
                                         value: driver.price
                                     )
                                 }

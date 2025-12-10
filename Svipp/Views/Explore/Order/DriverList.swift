@@ -6,7 +6,7 @@ struct DriverList: View {
     
     @EnvironmentObject var authService: AuthService
     
-    // 👇 Legg til state for valgt sorteringsmodus
+    //  Legg til state for valgt sorteringsmodus
     @State private var sortMode: DriverSortMode = .distance
     
     var body: some View {
@@ -18,7 +18,7 @@ struct DriverList: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 12) {
                     
-                    // 🔹 Filter-knappen på toppen av listen
+                    // Filter-knappen på toppen av listen
                     HStack {
                         DriverFilterMenu(selectedMode: $sortMode)
                         Spacer()

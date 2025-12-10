@@ -13,9 +13,7 @@ struct StatefulPreviewWrapper<Value, Content: View>: View {
         content($value)
     }
 }
-
 // Fjerne ^ før levering
-
 
 struct ProfileTripsSection: View {
     let drivers: [DriverInfo]
@@ -55,7 +53,6 @@ struct ProfileTripsSection: View {
                         let ratingToShow = String(myRating)
 
                         Button {
-                            // 👇 når brukeren trykker på kortet
                             onSelectTrip(driver)
                         } label: {
                             ZStack(alignment: .topTrailing) {
@@ -67,7 +64,7 @@ struct ProfileTripsSection: View {
                                     yearsExperience: driver.experienceDisplay,
                                     price: driver.price,
                                     imageName: driver.imageName,
-                                    showPriceLabel: false
+                                    showPriceLabel: true
                                 )
                                 .background(Color(red: 0.98, green: 0.96, blue: 0.90))
                                 .cornerRadius(18)
@@ -86,7 +83,7 @@ struct ProfileTripsSection: View {
                                 .buttonStyle(.plain)
                             }
                         }
-                        .buttonStyle(.plain)   // så det ser ut som et vanlig kort, ikke blå knapp
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -112,7 +109,7 @@ struct ProfileTripsSection: View {
                 drivers: DriverInfoData.all,
                 favoriteDriverIDs: binding,
                 currentUserName: "Lise",
-                onSelectTrip: { _ in }   // 👈 preview: gjør ingenting
+                onSelectTrip: { _ in }
             )
         }
     }

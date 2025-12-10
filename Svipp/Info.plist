@@ -4,5 +4,7 @@
 <dict>
 	<key>GEOAPIFY_API_KEY</key>
 	<string>15820fec817c4920b2a8ab39af600331</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Vi bruker posisjonen din for å vise sjåfører i nærheten.</string>
 </dict>
 </plist>

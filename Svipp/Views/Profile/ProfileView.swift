@@ -28,6 +28,14 @@ struct ProfileView: View {
                     if let profile {
                         ProfileInfoSection(profile: profile)
                         
+                        
+                        ProfileBookingsSection(
+                            bookings: authService.bookings,
+                            onDelete: { booking in
+                                authService.deleteBooking(booking)
+                            }
+                        )
+
                         ProfileTripsSection(
                             drivers: authService.previousDrivers,
                             favoriteDriverIDs: $favoriteDriverIDs,
@@ -48,7 +56,6 @@ struct ProfileView: View {
                 favoriteDrivers: favoriteDrivers
             )
         }
-        // 👇 LEGG TIL DENNE
         .sheet(item: $selectedDriverForReceipt) { driver in
             ReceiptView(
                 total: driver.price,
