@@ -41,8 +41,8 @@ Gå deretter inn i prosjektmappen:
 cd Svipp-repo
 ```
 
-2. Open the project in Xcode
-open Svipp.xcodeproj
+2. Åpne deretter prosjektet i Xcode
+
 
 
 # **Testkonto for Svipp**
