@@ -12,7 +12,6 @@ struct DriverCard: View {
     var showDetailsButton: Bool = true
     var rightPaddingForPrice: CGFloat = 0
     
-    // 👇 Nytt: favoritt-støtte (valgfritt)
     var showsHeart: Bool = false
     var isFavorite: Bool = false
     var onToggleFavorite: (() -> Void)? = nil

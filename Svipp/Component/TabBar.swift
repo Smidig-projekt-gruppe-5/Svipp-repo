@@ -41,7 +41,8 @@ struct TabBar: View {
             
         }
         .padding(.vertical, 12)
-        .background(Color(red: 0.05, green: 0.74, blue: 0.74))
+        .background(Color.svippMain)
+        //.background(Color(red: 0.05, green: 0.74, blue: 0.74))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }

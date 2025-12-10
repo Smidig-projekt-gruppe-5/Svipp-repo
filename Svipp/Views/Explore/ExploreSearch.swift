@@ -107,7 +107,7 @@ struct ExploreSearch: View {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar.badge.plus")
                         .font(.system(size: 16, weight: .semibold))
-                    Text("Booking")
+                    Text("Forhåndsbestill")
                         .font(.system(size: 16, weight: .semibold))
                 }
                 .foregroundColor(.white)
