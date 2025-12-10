@@ -1,6 +1,6 @@
 # **SVIPP**
 
-## **Konseptet**
+## **Konseptet til Svipp**
 SVIPP er en app-basert tjeneste som sørger for at både du og bilen din kommer trygt hjem når du ikke kan kjøre selv.  
 En sjåfør sykler til kunden på en sammenleggbar el-sykkel, legger sykkelen i bagasjerommet, kjører kunden og bilen hjem og sykler videre til neste oppdrag.  
 Dette gjør tjenesten både praktisk, sikker og miljøvennlig.
@@ -19,27 +19,10 @@ Dette gjør tjenesten både praktisk, sikker og miljøvennlig.
 - Sikker innlogging og brukerhåndtering (Firebase Authentication)
 
 ---
-# **Requirements**
 
-macOS med Xcode 15 eller nyere
+# **Installering**
 
-iOS 17+ simulator eller fysisk enhet
-
-Pod installert (hvis prosjektet bruker CocoaPods)
-
-Følgende Firebase-pakker må installeres gjennom Swift Package Manager:
-
-FirebaseAuth
-
-FirebaseCore
-
-FirebaseFirestore (hvis database brukes)
-
-FirebaseStorage (hvis bildelagring brukes)
-
-# **Installation**
-
-## **1. Clone repository**
+## **1. Klone repository**
 
 Åpne terminalen og naviger til ønsket mappe:
 
@@ -62,7 +45,7 @@ cd Svipp-repo
 open Svipp.xcodeproj
 
 
-# **Testkonto**
+# **Testkonto for Svipp**
 
 Du kan teste innlogging med følgende bruker:
 
@@ -70,4 +53,4 @@ E-post: admin@hotmail.com
 
 Passord: passord
 
- Eller så kan du lage din egen bruker!
+Eller så kan du lage din egen bruker!
