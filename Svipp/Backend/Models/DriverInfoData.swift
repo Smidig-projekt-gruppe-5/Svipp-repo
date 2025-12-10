@@ -20,11 +20,11 @@ struct DriverInfo: Identifiable, Codable, Equatable {
     let about: String?
     let reviews: [DriverReview]?
 
-    // MARK: - Legg til koordinater (Codable-kompatibelt)
+    // MARK: - Koordinater (settes av ViewModel basert på API Places)
     var latitude: Double? = nil
     var longitude: Double? = nil
 
-    // MARK: - Computed coordinate
+    // MARK: - Computed coordinate for kartet
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(
             latitude: latitude ?? 0,
@@ -47,8 +47,8 @@ struct DriverInfo: Identifiable, Codable, Equatable {
         tripCount: Int? = nil,
         about: String? = nil,
         reviews: [DriverReview]? = nil,
-        latitude: Double? = 0,
-        longitude: Double? = 0
+        latitude: Double? = nil,
+        longitude: Double? = nil
     ) {
         self.id = id
         self.name = name
@@ -68,6 +68,7 @@ struct DriverInfo: Identifiable, Codable, Equatable {
         self.longitude = longitude
     }
 
+    /// Tekst til UI, f.eks. "3 år – 180 turer"
     var experienceDisplay: String {
         switch (experienceYears, totalTrips) {
         case let (y?, t?):
@@ -102,15 +103,13 @@ extension DriverInfo {
     }
 }
 
-
 // MARK: - FULL SAMPLE DATA
 
 enum DriverInfoData {
-    
+
     static let all: [DriverInfo] = [
-        
-        
-        // MARK: - 1. Tom (Samme som previewDriver)
+
+        // 1. Tom
         DriverInfo(
             name: "Tom Nguyen",
             rating: "4.8",
@@ -130,9 +129,8 @@ enum DriverInfoData {
                 DriverReview(reviewerName: "Mona", reviewerAge: 35, rating: 4.0, comment: "Kom litt sent, men veldig god kjøring.", createdAt: nil)
             ]
         ),
-        
-        
-        // MARK: - 2. Ahmed
+
+        // 2. Ahmed
         DriverInfo(
             name: "Ahmed Ali",
             rating: "4.9",
@@ -152,9 +150,8 @@ enum DriverInfoData {
                 DriverReview(reviewerName: "Henrik Moe", reviewerAge: 52, rating: 4.5, comment: "Kom litt sent, men veldig behagelig tur.", createdAt: nil)
             ]
         ),
-        
-        
-        // MARK: - 3. Sara
+
+        // 3. Sara
         DriverInfo(
             name: "Sara Hansen",
             rating: "4.7",
@@ -174,9 +171,8 @@ enum DriverInfoData {
                 DriverReview(reviewerName: "Emilie Foss", reviewerAge: 31, rating: 5.0, comment: "Kommer til å velge henne igjen.", createdAt: nil)
             ]
         ),
-        
-        
-        // MARK: - 4. Jonas
+
+        // 4. Jonas
         DriverInfo(
             name: "Jonas Berg",
             rating: "4.9",
@@ -196,9 +192,8 @@ enum DriverInfoData {
                 DriverReview(reviewerName: "Martin Bråthen", reviewerAge: 33, rating: 4.0, comment: "God sjåfør selv i mye trafikk.", createdAt: nil)
             ]
         ),
-        
-        
-        // MARK: - 5. Fatima
+
+        // 5. Fatima
         DriverInfo(
             name: "Fatima Noor",
             rating: "5.0",

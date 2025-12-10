@@ -2,14 +2,13 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-// MARK: - MapPoint med STABIL ID (fikser flicker)
 private struct MapPoint: Identifiable {
     enum Kind {
         case user
         case driver(DriverInfo)
     }
 
-    let id: String
+    let id = UUID()
     let coordinate: CLLocationCoordinate2D
     let kind: Kind
 }
@@ -17,7 +16,6 @@ private struct MapPoint: Identifiable {
 struct ExploreView: View {
     @EnvironmentObject var authService: AuthService
     
-    @State private var ignoreAutocomplete = false
     @State private var fromText: String = "Min posisjon"
     @State private var toText: String = ""
     
@@ -34,79 +32,60 @@ struct ExploreView: View {
     
     @StateObject private var viewModel = ExploreViewModel()
     @StateObject private var locationManager = LocationManager()
-
+    
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
     
-    // 🔹 Sist posisjon vi oppdaterte sjåfører for
-    @State private var lastDriversUpdateCenter: CLLocationCoordinate2D? = nil
-    
-    // MARK: - STABILE MAP-ANNOTATIONS
     private var mapPoints: [MapPoint] {
         var items: [MapPoint] = []
-
-        // 👤 Bruker-posisjon
+        
         if let userCoord = locationManager.userLocation {
-            items.append(
-                MapPoint(
-                    id: "user-location",
-                    coordinate: userCoord,
-                    kind: .user
-                )
-            )
+            items.append(MapPoint(coordinate: userCoord, kind: .user))
         }
-
-        // 🚕 Sjåfører
+        
         for driver in viewModel.drivers {
-            items.append(
-                MapPoint(
-                    id: driver.id,
-                    coordinate: driver.coordinate,
-                    kind: .driver(driver)
-                )
-            )
+            items.append(MapPoint(coordinate: driver.coordinate, kind: .driver(driver)))
         }
-
+        
         return items
     }
     
     var body: some View {
         ZStack(alignment: .top) {
             
-            // MARK: - KART MED STABILE PINS
+            // MARK: - Kart
             Map(
                 coordinateRegion: $region,
                 annotationItems: mapPoints
             ) { point in
                 MapAnnotation(coordinate: point.coordinate) {
                     switch point.kind {
-
                     case .user:
-                        UserPin()
-                            .zIndex(2000)
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 14, height: 14)
+                            .overlay(
+                                Circle().stroke(Color.white, lineWidth: 2)
+                            )
+                            .shadow(radius: 3)
                         
                     case .driver(let driver):
                         DriverPin(
                             imageName: driver.imageName,
                             priceText: driver.price
                         ) {
-                            // 👇 Rett til bestilling for denne sjåføren
                             selectedDriver = driver
                             showDriverOrder = true
                         }
-                        .scaleEffect(0.8)
                         .zIndex(1000)
-
-
                     }
                 }
             }
             .ignoresSafeArea()
-            .zIndex(0)
             
-            // MARK: - SØK
+            // MARK: - Søk + autocomplete
             VStack(spacing: 12) {
                 ExploreSearch(
                     fromText: $fromText,
@@ -117,11 +96,12 @@ struct ExploreView: View {
                     },
                     onBooking: { showBooking = true },
                     suggestions: viewModel.suggestions,
-                    onSelectSuggestion: handleSelect,
-                    onClearSuggestions: { viewModel.suggestions = [] }
+                    onSelectSuggestion: handleSelectSuggestion,
+                    onClearSuggestions: {
+                        viewModel.suggestions = []
+                    }
                 )
                 .onChange(of: toText) { newValue in
-                    if ignoreAutocomplete { return }
                     viewModel.query = newValue
                     Task { await viewModel.searchAutocomplete() }
                 }
@@ -130,13 +110,11 @@ struct ExploreView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-            .zIndex(10)
             
-            // MARK: - ZOOM-KONTROLLER
-            MapZoomControls(region: $region, bottomPadding: 100)
-                .zIndex(5)
+            // MARK: - Zoom-knapper
+            MapZoomControls(region: $region, bottomPadding: 120)
             
-            // MARK: - DRIVERLISTE
+            // MARK: - Driverliste
             DriverList(
                 isPresented: $showDriverList,
                 onSelect: { driver in
@@ -148,9 +126,8 @@ struct ExploreView: View {
                     }
                 }
             )
-            .zIndex(20)
             
-            // MARK: - DRIVER ORDER
+            // MARK: - Bestilling
             if let selectedDriver {
                 DriverOrder(
                     isPresented: $showDriverOrder,
@@ -158,10 +135,9 @@ struct ExploreView: View {
                     showPickUp: $showPickUp,
                     driver: selectedDriver
                 )
-                .zIndex(30)
             }
             
-            // MARK: - PICK-UP VIEW
+            // MARK: - Sjåfør på vei
             if let selectedDriver, showPickUp {
                 PickUpModal(
                     isPresented: $showPickUp,
@@ -170,11 +146,10 @@ struct ExploreView: View {
                     showTripCompleted: $showTripCompleted
                 )
                 .transition(.move(edge: .bottom))
-                .zIndex(40)
             }
         }
         
-        // MARK: - BOOKING SHEET
+        // MARK: - Booking Sheet
         .sheet(isPresented: $showBooking) {
             BookingView(
                 fromAddress: fromText,
@@ -192,7 +167,7 @@ struct ExploreView: View {
             }
         }
         
-        // MARK: - TRIP COMPLETED
+        // MARK: - Trip completed
         .fullScreenCover(isPresented: $showTripCompleted) {
             if let driver = selectedDriver {
                 TripCompleted(isPresented: $showTripCompleted, driver: driver)
@@ -201,67 +176,42 @@ struct ExploreView: View {
             }
         }
         
-        // MARK: - ALERT
+        // MARK: - Booking alert
         .alert("Booking bekreftet", isPresented: $showBookingConfirmation) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Vi har mottatt bookingen din. Du finner den under profilen din.")
+            Text("Du finner bookingen under profilen din.")
         }
         
+        // MARK: - Når viewet vises
         .onAppear {
             viewModel.loadDrivers()
-            lastDriversUpdateCenter = region.center
+            viewModel.placeAllDriversAround(coord: region.center)
         }
-
-        // 👇 OPPDATER SJÅFØRER KONTROLLERT NÅR DU FLYTTER PÅ KARTET
-        .onChange(of: region.center.latitude) { _ in
-            let center = region.center
-            if shouldUpdateDrivers(for: center) {
-                lastDriversUpdateCenter = center
-                viewModel.placeAllDriversAround(coord: center)
-            }
-        }
-
-        // MARK: - CENTER KARTET PÅ BRUKER KUN 1 GANG
+        
+        // MARK: - Center én gang på brukerposisjon (ingen flere auto-endringer)
         .onChange(of: locationManager.userLocation?.latitude) { _ in
             guard let coord = locationManager.userLocation else { return }
             guard !hasCenteredOnUser else { return }
-
+            
             hasCenteredOnUser = true
-            lastDriversUpdateCenter = coord
-            withAnimation {
-                region.center = coord
-            }
+            withAnimation { region.center = coord }
         }
     }
     
-    // MARK: - Bare oppdater sjåfører hvis kartet har flyttet seg "nok"
-    private func shouldUpdateDrivers(for newCenter: CLLocationCoordinate2D) -> Bool {
-        guard let last = lastDriversUpdateCenter else { return true }
-        
-        let lastLoc = CLLocation(latitude: last.latitude, longitude: last.longitude)
-        let newLoc = CLLocation(latitude: newCenter.latitude, longitude: newCenter.longitude)
-        let distance = lastLoc.distance(from: newLoc) // i meter
-        
-        // Bare oppdater hvis vi har flyttet mer enn 500 meter
-        return distance > 800
-    }
-    
-    private func handleSelect(_ suggestion: AutocompleteSuggestion) {
+    private func handleSelectSuggestion(_ suggestion: AutocompleteSuggestion) {
         toText = suggestion.properties.formatted ?? ""
         viewModel.suggestions = []
-
+        
         let coord = suggestion.geometry.coordinate
-
+        
         withAnimation {
             region = MKCoordinateRegion(
                 center: coord,
                 span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
             )
         }
-
-        // 🚕 Vis sjåfører rundt søket + oppdater "last"
-        lastDriversUpdateCenter = coord
+        
         viewModel.placeAllDriversAround(coord: coord)
     }
 }

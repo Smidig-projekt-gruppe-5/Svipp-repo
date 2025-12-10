@@ -2,19 +2,19 @@ import Foundation
 import SwiftUI
 import CoreLocation
 
-
 @MainActor
 class ExploreViewModel: ObservableObject {
     
+    // Sist sentrum vi brukte for å oppdatere sjåfører
     @Published var lastSearchCoordinate: CLLocationCoordinate2D?
     
     @Published var query: String = ""
     @Published var suggestions: [AutocompleteSuggestion] = []
     
-    // Fra API
+    // Fra Geoapify Places API
     @Published var places: [PlaceFeature] = []
     
-    // Sjåfører som skal vises i Explore
+    // Sjåfører som vises i Explore
     @Published var drivers: [DriverInfo] = []
     
     @Published var isLoading = false
@@ -22,8 +22,6 @@ class ExploreViewModel: ObservableObject {
     
     private let autocompleteService = AutocompleteService()
     private let apiService = ApiService()
-    
-    // Lagrede sjåfører
     private let authService: AuthService
     
     init(authService: AuthService = .shared) {
@@ -31,49 +29,23 @@ class ExploreViewModel: ObservableObject {
         loadDrivers()
     }
     
-    // 🔥 Gjør brukerens søketekst om til gyldig Geoapify-kategori
-    func normalizedCategory(from text: String) -> String {
-        let lower = text.lowercased()
-
-        if lower.contains("pizza") { return "catering.restaurant" }
-        if lower.contains("kebab") { return "catering.restaurant" }
-        if lower.contains("burger") { return "catering.fast_food" }
-        if lower.contains("mat") { return "catering.restaurant" }
-        if lower.contains("kafe") { return "catering.cafe" }
-        if lower.contains("butikk") { return "commercial.supermarket" }
-        if lower.contains("bar") { return "catering.bar" }
-
-        // fallback-kategori → gir ALLTID resultater
-        return "catering.restaurant"
-    }
-    
+    // MARK: - Default sjåfører (uten posisjon – posisjon settes senere)
     func loadDrivers() {
-        // Bruk hardkodede sjåfører
-        var list = DriverInfoData.all
-        
-        // Gi tilfeldige koordinater rundt Oslo
-        for i in list.indices {
-            list[i].latitude = 59.91 + Double.random(in: -0.01...0.01)
-            list[i].longitude = 10.75 + Double.random(in: -0.01...0.01)
-        }
-        
-        self.drivers = list
+        self.drivers = DriverInfoData.all
     }
     
+    // MARK: - Autocomplete
     func searchAutocomplete() async {
         guard !query.isEmpty else {
             suggestions = []
             return
         }
         
-        print(" Kaller autocomplete API for: \(query)")
-        
         do {
             let result = try await autocompleteService.autocomplete(query: query)
             self.suggestions = result
-            print("Fikk \(result.count) forslag")
         } catch {
-            print("Autocomplete error: \(error)")
+            print("Autocomplete error:", error)
         }
     }
     
@@ -82,121 +54,100 @@ class ExploreViewModel: ObservableObject {
         self.suggestions = []
     }
     
-    func positionDriversAround(_ coord: CLLocationCoordinate2D) {
-        let drivers = DriverInfoData.all
-        
-        // Gi hver sjåfør en tilfeldig posisjon rundt søkepunktet
-        let positioned = drivers.map { driver -> DriverInfo in
-            var d = driver
-            
-            let latOffset = Double.random(in: -0.01...0.01)
-            let lonOffset = Double.random(in: -0.01...0.01)
-            
-            d.latitude = coord.latitude + latOffset
-            d.longitude = coord.longitude + lonOffset
-            
-            return d
-        }
-        
-        self.drivers = positioned
-        print("🚕 \(drivers.count) sjåfører plassert rundt \(coord)")
-    }
-    
+    // MARK: - Kalles fra ExploreView når kart-senteret endres eller søk velges
     func placeAllDriversAround(coord: CLLocationCoordinate2D) {
-        var result: [DriverInfo] = []
+        lastSearchCoordinate = coord
         
-        for driver in DriverInfoData.all {
-            var d = driver
-            // Litt random offset så de ikke ligger oppå hverandre
-            d.latitude  = coord.latitude  + Double.random(in: -0.01...0.01)
-            d.longitude = coord.longitude + Double.random(in: -0.01...0.01)
-            result.append(d)
+        Task {
+            await fetchPlaces(
+                lat: coord.latitude,
+                lon: coord.longitude,
+                category: "catering.cafe"   // kun kaféer
+            )
         }
-        
-        self.drivers = result
     }
     
-    func buildDriversFromPlaces() {
-        print("🏁 buildDriversFromPlaces() startet")
-        print("Antall places:", places.count)
-
-        var available = DriverInfoData.all
-        available.shuffle()
-
-        guard !available.isEmpty else {
-            self.drivers = []
-            return
-        }
-
-        // Hvis places er tomt: vis ALLE drivere rundt brukerens senter
-        if places.isEmpty {
-            print("⚠️ Ingen places funnet – viser alle drivere rundt regionen")
-
-            // Sett ALLE drivere til kartets senter
-            let center = CLLocationCoordinate2D(latitude: 63.4305, longitude: 10.3951) // Trondheim default
-
-            let updated = DriverInfoData.all.map { driver -> DriverInfo in
-                var d = driver
-                d.latitude = center.latitude + Double.random(in: -0.01...0.01)
-                d.longitude = center.longitude + Double.random(in: -0.01...0.01)
-                return d
-            }
-
-            self.drivers = updated
-            return
-        }
-
-        // 🔥 Hvis places finnes → match drivere til places
-        let count = min(places.count, available.count)
-        var slicedDrivers = Array(available.prefix(count))
-        let slicedPlaces = Array(places.prefix(count))
-
-        for i in 0..<count {
-            let coord = slicedPlaces[i].geometry.coordinate
-            slicedDrivers[i].latitude = coord.latitude
-            slicedDrivers[i].longitude = coord.longitude
-        }
-
-        self.drivers = slicedDrivers
-    }
-    
+    // MARK: - Hent places fra API (med fallback)
     func fetchPlaces(lat: Double, lon: Double, category: String) async {
         isLoading = true
         errorMessage = nil
-
+        
+        let anchor = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        
         do {
             let result = try await apiService.fetchPlaces(
                 lat: lat,
                 lon: lon,
                 category: category
             )
-
+            
             self.places = result
-
-            // ❗️❗️ ESSENSIELT: Uten denne får du ALDRI driverpins ❗️❗️
-            self.buildDriversFromPlaces()
-
+            print("📍 ExploreViewModel: places.count =", result.count)
+            
+            // Bygg sjåfører basert på places (eller fallback hvis tom)
+            self.buildDriversFromPlaces(anchorIfEmpty: anchor)
+            
         } catch {
+            print("❌ ExploreViewModel.fetchPlaces feilet:", error)
             self.errorMessage = "Kunne ikke hente steder"
+            
+            // VIKTIG: ikke slett drivers – generer fallback i stedet
             self.places = []
-            self.drivers = []
+            self.buildDriversFromPlaces(anchorIfEmpty: anchor)
         }
-
+        
         isLoading = false
     }
     
-    func placeDriversAround(coord: CLLocationCoordinate2D) {
-        var result: [DriverInfo] = []
+    // MARK: - Lag sjåfører basert på places
+    func buildDriversFromPlaces(anchorIfEmpty: CLLocationCoordinate2D? = nil) {
+        print("🏁 buildDriversFromPlaces() – places:", places.count)
         
-        for driver in DriverInfoData.all {
-            var d = driver
-            d.latitude  = coord.latitude  + Double.random(in: -0.01...0.01)
-            d.longitude = coord.longitude + Double.random(in: -0.01...0.01)
-            result.append(d)
+        var available = DriverInfoData.all
+        available.shuffle()
+        
+        guard !available.isEmpty else {
+            self.drivers = []
+            return
         }
-
-        self.drivers = result
+        
+        // Hvis places er tomt: fallback → spre sjåfører rundt et ankerpunkt
+        if places.isEmpty {
+            let center: CLLocationCoordinate2D
+            
+            if let anchorIfEmpty {
+                center = anchorIfEmpty
+            } else if let last = lastSearchCoordinate {
+                center = last
+            } else {
+                // fallback → Oslo sentrum
+                center = CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522)
+            }
+            
+            let updated = available.map { driver -> DriverInfo in
+                var d = driver
+                d.latitude = center.latitude + Double.random(in: -0.01...0.01)
+                d.longitude = center.longitude + Double.random(in: -0.01...0.01)
+                return d
+            }
+            
+            self.drivers = updated
+            print("⚠️ places tomt → bruk fallback, \(updated.count) sjåfører spredd rundt \(center)")
+            return
+        }
+        
+        // Vi har places → match drivere til places én-til-én
+        let count = min(places.count, available.count)
+        var slicedDrivers = Array(available.prefix(count))
+        let slicedPlaces = Array(places.prefix(count))
+        
+        for i in 0..<count {
+            let coord = slicedPlaces[i].geometry.coordinate
+            slicedDrivers[i].latitude = coord.latitude
+            slicedDrivers[i].longitude = coord.longitude
+        }
+        
+        self.drivers = slicedDrivers
+        print("✅ Matchet \(count) sjåfører til \(count) places fra API")
     }
-    
-    
 }

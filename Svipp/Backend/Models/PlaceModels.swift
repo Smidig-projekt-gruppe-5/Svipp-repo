@@ -1,45 +1,54 @@
-
 import Foundation
 import CoreLocation
 
-struct PlaceResponse: Codable
-{
+struct PlaceResponse: Codable {
     let features: [PlaceFeature]
 }
 
-//Et enkeltsted fra API
-struct PlaceFeature: Codable, Identifiable
-{
-    var id = UUID()
+// Et enkelt sted fra API
+struct PlaceFeature: Codable, Identifiable {
+    // Lokal id – lages i appen, IKKE fra API
+    let id = UUID()
+    
     let properties: PlaceProperties
     let geometry: PlaceGeometry
+    
+    // Viktig: vi FJERNER "id" fra det som forventes fra JSON
+    private enum CodingKeys: String, CodingKey {
+        case properties
+        case geometry
+    }
 }
 
-//Koordinater fra API
-struct PlaceGeometry: Codable
-{
+// Koordinater fra API
+struct PlaceGeometry: Codable {
     let coordinates: [Double]
 
-    var coordinate: CLLocationCoordinate2D
-    {
-        CLLocationCoordinate2D(
+    var coordinate: CLLocationCoordinate2D {
+        guard coordinates.count >= 2 else {
+            return CLLocationCoordinate2D(latitude: 0, longitude: 0)
+        }
+        // Geoapify: [lon, lat]
+        return CLLocationCoordinate2D(
             latitude: coordinates[1],
             longitude: coordinates[0]
         )
     }
 }
 
-//Data fra plasser
-struct PlaceProperties: Codable
-{
+// Data fra plasser
+struct PlaceProperties: Codable {
     let name: String?
     let address_line2: String?
     let country: String?
     let city: String?
-    let lon: Double
-    let lat: Double
+    
+    // Gjør disse gjerne optional – noen steder mangler lat/lon i properties
+    let lon: Double?
+    let lat: Double?
+    
     let categories: [String]?
     
-    //Avstand fra bruker - evt videreutvikling
+    // Avstand fra bruker - brukes bare i appen
     var distanceFromUser: Double?
 }

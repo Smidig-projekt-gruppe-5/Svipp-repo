@@ -9,27 +9,23 @@ struct ExploreSearch: View {
     
     var suggestions: [AutocompleteSuggestion] = []
     var onSelectSuggestion: ((AutocompleteSuggestion) -> Void)? = nil
-    
-    // 🔥 NY CALLBACK
     var onClearSuggestions: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 12) {
             searchCard
-            timeRow
+            actionRow
         }
-        // 🔥 Når man trykker på søkefeltområdet → skjul forslag
         .onTapGesture {
-            withAnimation {
-                onClearSuggestions?()
-            }
+            onClearSuggestions?()
         }
     }
     
-    
+    // MARK: - Søke-kortet (RYDDET – ingen søkeknapp her nå)
     private var searchCard: some View {
         VStack(spacing: 0) {
             
+            // FRA:
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Fra:")
@@ -46,6 +42,7 @@ struct ExploreSearch: View {
             
             Divider()
             
+            // TIL:
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Til:")
@@ -55,39 +52,29 @@ struct ExploreSearch: View {
                     TextField("Skriv adresse…", text: $toText)
                         .textFieldStyle(.plain)
                 }
-                
                 Spacer()
                 
-                Button {
-                    onClearSuggestions?()   // 🔥 Skjul forslag når søk trykkes
-                    onSearch()
-                } label: {
-                    Image(systemName: "magnifyingglass.circle.fill")
-                        .font(.system(size: 26, weight: .medium))
-                }
-                .foregroundColor(Color.svippMain)
+                // SØK-KNAPP FJERNET HER
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
             
+            
+            // AUTOCOMPLETE
             if !suggestions.isEmpty {
                 VStack(spacing: 0) {
                     ForEach(suggestions) { suggestion in
                         Button {
-                            withAnimation {
-                                onSelectSuggestion?(suggestion)
-                                onClearSuggestions?()   // 🔥 Skjul etter valg
-                            }
+                            onSelectSuggestion?(suggestion)
+                            onClearSuggestions?()
                         } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: "mappin.and.ellipse")
                                     .foregroundColor(.svippMain)
-                                    .font(.system(size: 16))
                                 
                                 Text(suggestion.properties.formatted ?? "Ukjent adresse")
                                     .foregroundColor(.primary)
                                     .font(.subheadline)
-                                    .multilineTextAlignment(.leading)
                                 
                                 Spacer()
                             }
@@ -111,25 +98,38 @@ struct ExploreSearch: View {
     }
     
     
-    private var timeRow: some View {
+    // MARK: - STORE KNAPPER (Booking & Søk)
+    private var actionRow: some View {
         HStack(spacing: 12) {
+            
+            //  BOOKING
             Button(action: onBooking) {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar.badge.plus")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.svippAccent)
-                        .frame(width: 22, height: 22)
-                    
+                        .font(.system(size: 16, weight: .semibold))
                     Text("Booking")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(Color.svippAccent)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
                 .background(Color.svippMain)
-                .clipShape(Capsule())
+                .cornerRadius(12)
+            }
+            
+            //  SØK
+            Button(action: onSearch) {
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass.circle.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Søk")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.svippMain)
+                .cornerRadius(12)
             }
         }
     }
@@ -141,8 +141,6 @@ struct ExploreSearch: View {
         toText: .constant("Kalfarlien 21"),
         onSearch: {},
         onBooking: {},
-        suggestions: [],
-        onSelectSuggestion: nil,
-        onClearSuggestions: nil
+        suggestions: []
     )
 }
