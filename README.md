@@ -70,4 +70,4 @@ E-post: admin@hotmail.com
 
 Passord: passord
 
- eller å velge å lage din en ny bruker 
+ Eller så kan du lage din egen bruker!
