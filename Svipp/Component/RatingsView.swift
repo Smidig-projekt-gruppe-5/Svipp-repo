@@ -1,7 +1,7 @@
 import SwiftUI
-
+// stjerne rating 
 struct StarRatingView: View {
-    @Binding var rating: Int        // Binding i stedet for vanlig var
+    @Binding var rating: Int
     let maxRating: Int = 5
     
     var body: some View {
@@ -17,25 +17,9 @@ struct StarRatingView: View {
                         : Color("SvippTextColor").opacity(0.8)
                     )
                     .onTapGesture {
-                        rating = index   // Oppdater rating når man trykker
+                        rating = index
                     }
             }
         }
-    }
-}
-
-#Preview {
-    VStack(spacing: 20) {
-        StatefulStarRatingPreview()
-            .frame(height: 20)
-    }
-    .padding()
-}
-
-struct StatefulStarRatingPreview: View {
-    @State private var rating: Int = 1
-    
-    var body: some View {
-        StarRatingView(rating: $rating)
     }
 }

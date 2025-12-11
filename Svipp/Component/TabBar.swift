@@ -1,12 +1,5 @@
-//
-//  TabBar.swift
-//  Svipp
-//
-//  Created by Kasper Espenes on 02/12/2025.
-//
-
 import SwiftUI
-
+// tab bar komponent
 enum TabSelection {
     case explore
     case profile
@@ -42,13 +35,6 @@ struct TabBar: View {
         }
         .padding(.vertical, 12)
         .background(Color.svippMain)
-        //.background(Color(red: 0.05, green: 0.74, blue: 0.74))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }
-
-#Preview {
-    TabBar(selectedTab: .constant(.explore))
-        .padding()
-}
-

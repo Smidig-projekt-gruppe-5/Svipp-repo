@@ -1,12 +1,5 @@
-//
-//  ReceiptComponent.swift
-//  Svipp
-//
-//  Created by Kasper Espenes on 02/12/2025.
-//
-
 import SwiftUI
-// Denne brukes til kvittering (Tidligere bestilling side)
+// denne brukes til kvittering (Tidligere bestilling side)
 struct TripAmount: View {
     var amount: String
     var brand: String
@@ -24,7 +17,7 @@ struct TripAmount: View {
                 HStack(spacing: 8) {
                     Text(brand)
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(Color(red: 0.00, green: 0.23, blue: 0.54)) // VISA-Farger
+                        .foregroundColor(Color(red: 0.00, green: 0.23, blue: 0.54))
                     Text(last4)
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.black)
@@ -54,6 +47,7 @@ struct receiptRow: View {
     }
 }
 
+// kvittering knapp 
 struct receiptActionButton: View {
     let systemImage: String
     let title: String
@@ -78,10 +72,4 @@ struct receiptActionButton: View {
         }
         .buttonStyle(.plain)
     }
-}
-
-#Preview {
-    TripAmount(amount: "NOK 192", brand: "VISA", last4: "1933")
-        .padding()
-        .background(Color.white)
 }

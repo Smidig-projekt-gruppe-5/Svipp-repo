@@ -10,7 +10,8 @@ class ApiService {
         return key
     }
     
-    /// Henter steder (f.eks. kaféer) fra Geoapify Places-API
+
+    // henter steder som vi bruker som sjåfører !!!
     func fetchPlaces(
         lat: Double,
         lon: Double,

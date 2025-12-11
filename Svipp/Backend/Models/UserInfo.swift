@@ -1,21 +1,21 @@
 import Foundation
-
+// data for userinfo
 struct UserInfo: Codable, Identifiable {
     let id: String
     
-    // Bruker info
+    // bruker info
     var name: String
     var birthdate: String
     var email: String
     var profileImageURL: String?
     var phoneNumber: String?
     
-    // Adresse
+    // adresse
     var addressLine: String?
     var postalCode: String?
     var city: String?
     
-    // Bil info
+    // bil info
     var carMake: String?
     var carModel: String?
     var carYear: String?

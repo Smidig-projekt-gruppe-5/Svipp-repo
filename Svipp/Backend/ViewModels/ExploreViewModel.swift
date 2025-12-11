@@ -5,18 +5,11 @@ import CoreLocation
 @MainActor
 class ExploreViewModel: ObservableObject {
     
-    // Sist sentrum vi brukte for å oppdatere sjåfører
     @Published var lastSearchCoordinate: CLLocationCoordinate2D?
-    
     @Published var query: String = ""
     @Published var suggestions: [AutocompleteSuggestion] = []
-    
-    // Fra Geoapify Places API
     @Published var places: [PlaceFeature] = []
-    
-    // Sjåfører som vises i Explore
-    @Published var drivers: [DriverInfo] = []
-    
+    @Published var drivers: [DriverInfo] = [] // sjåfører !!!
     @Published var isLoading = false
     @Published var errorMessage: String?
     
@@ -29,12 +22,12 @@ class ExploreViewModel: ObservableObject {
         loadDrivers()
     }
     
-    // MARK: - Default sjåfører (uten posisjon – posisjon settes senere)
+    // default sjåfører (fra infodata )
     func loadDrivers() {
         self.drivers = DriverInfoData.all
     }
     
-    // MARK: - Autocomplete
+    // autocomplete
     func searchAutocomplete() async {
         guard !query.isEmpty else {
             suggestions = []
@@ -54,7 +47,6 @@ class ExploreViewModel: ObservableObject {
         self.suggestions = []
     }
     
-    // MARK: - Kalles fra ExploreView når kart-senteret endres eller søk velges
     func placeAllDriversAround(coord: CLLocationCoordinate2D) {
         lastSearchCoordinate = coord
         
@@ -62,12 +54,12 @@ class ExploreViewModel: ObservableObject {
             await fetchPlaces(
                 lat: coord.latitude,
                 lon: coord.longitude,
-                category: "catering.cafe"   // kun kaféer
+                category: "catering.cafe" // gjøres om til sjåfører
             )
         }
     }
     
-    // MARK: - Hent places fra API (med fallback)
+    // henter sjåfører med fallback
     func fetchPlaces(lat: Double, lon: Double, category: String) async {
         isLoading = true
         errorMessage = nil
@@ -82,16 +74,11 @@ class ExploreViewModel: ObservableObject {
             )
             
             self.places = result
-            print("📍 ExploreViewModel: places.count =", result.count)
-            
-            // Bygg sjåfører basert på places (eller fallback hvis tom)
             self.buildDriversFromPlaces(anchorIfEmpty: anchor)
             
         } catch {
-            print("❌ ExploreViewModel.fetchPlaces feilet:", error)
+            print("ExploreViewModel.fetchPlaces feilet:", error)
             self.errorMessage = "Kunne ikke hente steder"
-            
-            // VIKTIG: ikke slett drivers – generer fallback i stedet
             self.places = []
             self.buildDriversFromPlaces(anchorIfEmpty: anchor)
         }
@@ -99,9 +86,8 @@ class ExploreViewModel: ObservableObject {
         isLoading = false
     }
     
-    // MARK: - Lag sjåfører basert på places
+    // lag sjåfører av places
     func buildDriversFromPlaces(anchorIfEmpty: CLLocationCoordinate2D? = nil) {
-        print("🏁 buildDriversFromPlaces() – places:", places.count)
         
         var available = DriverInfoData.all
         available.shuffle()
@@ -111,7 +97,7 @@ class ExploreViewModel: ObservableObject {
             return
         }
         
-        // Hvis places er tomt: fallback → spre sjåfører rundt et ankerpunkt
+        // hvis places er tomt? spre sjåfører rundt et punkt
         if places.isEmpty {
             let center: CLLocationCoordinate2D
             
@@ -120,8 +106,8 @@ class ExploreViewModel: ObservableObject {
             } else if let last = lastSearchCoordinate {
                 center = last
             } else {
-                // fallback → Oslo sentrum
-                center = CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522)
+                center = CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522)// fallback  (oslo)
+
             }
             
             let updated = available.map { driver -> DriverInfo in
@@ -132,11 +118,9 @@ class ExploreViewModel: ObservableObject {
             }
             
             self.drivers = updated
-            print("⚠️ places tomt → bruk fallback, \(updated.count) sjåfører spredd rundt \(center)")
+            print("places tomt -> bruk fallback... \(updated.count) sjåfører spredd rundt \(center)")
             return
         }
-        
-        // Vi har places → match drivere til places én-til-én
         let count = min(places.count, available.count)
         var slicedDrivers = Array(available.prefix(count))
         let slicedPlaces = Array(places.prefix(count))
@@ -148,6 +132,5 @@ class ExploreViewModel: ObservableObject {
         }
         
         self.drivers = slicedDrivers
-        print("✅ Matchet \(count) sjåfører til \(count) places fra API")
     }
 }

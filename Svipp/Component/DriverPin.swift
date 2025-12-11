@@ -1,5 +1,5 @@
 import SwiftUI
-
+// sjåfør pins som blir brukt i kartet 
 struct DriverPin: View {
     let imageName: String
     let priceText: String
@@ -35,7 +35,3 @@ struct DriverPin: View {
     }
 }
 
-#Preview {
-    DriverPin(imageName: "Tom", priceText: "555 kr") { }
-        .padding()
-}

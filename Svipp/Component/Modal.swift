@@ -1,5 +1,5 @@
 import SwiftUI
-
+// default modal 
 struct Modal<Content: View>: View {
     @Binding var isPresented: Bool
     var title: String?

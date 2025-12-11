@@ -1,5 +1,6 @@
 import Foundation
 
+// data vi bruker for booking
 struct SvippBooking: Identifiable, Codable {
     let id: String
     let userId: String

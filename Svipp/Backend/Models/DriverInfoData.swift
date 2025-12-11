@@ -13,18 +13,17 @@ struct DriverInfo: Identifiable, Codable, Equatable {
     let imageName: String
     let lastTripAt: String
 
-    // Ekstra info til profilview
+    // ekstra info til profilview
     let age: Int?
     let employmentDate: String?
     let tripCount: Int?
     let about: String?
     let reviews: [DriverReview]?
 
-    // MARK: - Koordinater (settes av ViewModel basert på API Places)
+    // kordinater for kartet
     var latitude: Double? = nil
     var longitude: Double? = nil
 
-    // MARK: - Computed coordinate for kartet
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(
             latitude: latitude ?? 0,
@@ -68,7 +67,7 @@ struct DriverInfo: Identifiable, Codable, Equatable {
         self.longitude = longitude
     }
 
-    /// Tekst til UI, f.eks. "3 år – 180 turer"
+    // tekst til sjåfør turer
     var experienceDisplay: String {
         switch (experienceYears, totalTrips) {
         case let (y?, t?):
@@ -83,7 +82,7 @@ struct DriverInfo: Identifiable, Codable, Equatable {
     }
 }
 
-// MARK: - Ekstra helpers
+// ekstra helpers
 extension DriverInfo {
     func ratingGivenBy(userName: String) -> Int? {
         reviews?.first(where: { $0.reviewerName == userName }).map {
@@ -103,13 +102,11 @@ extension DriverInfo {
     }
 }
 
-// MARK: - FULL SAMPLE DATA
-
+// sample data brukes til sjåfører
 enum DriverInfoData {
 
     static let all: [DriverInfo] = [
 
-        // 1. Tom
         DriverInfo(
             name: "Tom Nguyen",
             rating: "4.8",
@@ -130,7 +127,6 @@ enum DriverInfoData {
             ]
         ),
 
-        // 2. Ahmed
         DriverInfo(
             name: "Ahmed Ali",
             rating: "4.9",
@@ -151,7 +147,6 @@ enum DriverInfoData {
             ]
         ),
 
-        // 3. Sara
         DriverInfo(
             name: "Sara Hansen",
             rating: "4.7",
@@ -172,7 +167,6 @@ enum DriverInfoData {
             ]
         ),
 
-        // 4. Jonas
         DriverInfo(
             name: "Jonas Berg",
             rating: "4.9",
@@ -193,7 +187,6 @@ enum DriverInfoData {
             ]
         ),
 
-        // 5. Fatima
         DriverInfo(
             name: "Fatima Noor",
             rating: "5.0",

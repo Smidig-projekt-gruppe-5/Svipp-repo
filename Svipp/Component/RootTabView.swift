@@ -1,10 +1,3 @@
-//
-//  RootTabView.swift
-//  Svipp
-//
-//  Created by Kasper Espenes on 02/12/2025.
-//
-
 import SwiftUI
 
 struct RootTabView: View {
@@ -29,8 +22,4 @@ struct RootTabView: View {
         }
         .background(Color.white)
     }
-}
-
-#Preview {
-    RootTabView()
 }
