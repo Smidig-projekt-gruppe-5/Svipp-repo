@@ -11,22 +11,20 @@ struct DriverCard: View {
     let onTapDetails: () -> Void
     var showDetailsButton: Bool = true
     var rightPaddingForPrice: CGFloat = 0
-    
-    // 👇 Nytt: favoritt-støtte (valgfritt)
     var showsHeart: Bool = false
     var isFavorite: Bool = false
     var onToggleFavorite: (() -> Void)? = nil
     
     var body: some View {
         HStack(spacing: 14) {
-            // Bilde
+            // bilde
             Image(imageName)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 56, height: 56)
                 .clipShape(Circle())
             
-            // VENSTRE: navn, rating, adresse, erfaring
+            // venstre... navn, rating, adresse, erfaring
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 6) {
                     Text(name)
@@ -53,7 +51,7 @@ struct DriverCard: View {
             
             Spacer()
             
-            // HØYRE: NOK + pris + (valgfritt) hjerte
+            // høyre.... NOK, pris, hjerte, vis profil knapp
             VStack(alignment: .trailing, spacing: 4) {
                 
                 

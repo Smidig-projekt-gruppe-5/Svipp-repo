@@ -1,15 +1,7 @@
-//
-//  DriverFilter.swift
-//  Svipp
-//
-//  Created by Helena Simonsen on 04/12/2025.
-//
-
 import Foundation
 import SwiftUI
 
-// MARK: - Sorteringsmoduser for sjåfører
-
+// sortering av sjåfører
 enum DriverSortMode: String, CaseIterable {
     case distance = "Nærmeste til lengst unna"
     case rating   = "Høyest rating"
@@ -24,15 +16,13 @@ enum DriverSortMode: String, CaseIterable {
     }
 }
 
-// MARK: - Filter / sorteringslogikk for DriverInfo
-
+// filter og sortering logikk for DriverInfo
 struct DriverFilter {
     
     static func sort(drivers: [DriverInfo], by mode: DriverSortMode) -> [DriverInfo] {
         switch mode {
         case .distance:
-            // Foreløpig: behold original rekkefølge (default).
-            // Her kan du senere sortere basert på faktisk distanse.
+
             return drivers
             
         case .rating:
@@ -47,22 +37,18 @@ struct DriverFilter {
         }
     }
     
-    // "4.8" -> 4.8
     private static func parseRating(_ text: String) -> Double {
-        // Hvis du noen gang får komma, f.eks "4,8"
         let normalized = text.replacingOccurrences(of: ",", with: ".")
         return Double(normalized) ?? 0
     }
     
-    // "555 kr" -> 555
     private static func parsePrice(_ text: String) -> Int {
         let digits = text.filter { $0.isNumber }
         return Int(digits) ?? Int.max
     }
 }
 
-// MARK: - Filter meny-komponent som kan festes på knappen
-
+// filter meny
 struct DriverFilterMenu: View {
     @Binding var selectedMode: DriverSortMode
     
