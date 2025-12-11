@@ -31,10 +31,3 @@ struct DriverManagementView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        DriverManagementView()
-            .environmentObject(AuthService.shared)
-    }
-}

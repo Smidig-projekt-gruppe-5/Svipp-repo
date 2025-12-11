@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TripCompleted: View {
     @Binding var isPresented: Bool
-    let driver: DriverInfo                      // 🔹 sjåføren for turen
+    let driver: DriverInfo
     
     @EnvironmentObject var authService: AuthService
     

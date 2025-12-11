@@ -7,7 +7,7 @@ private struct MapPoint: Identifiable {
         case user
         case driver(DriverInfo)
     }
-
+    
     let id = UUID()
     let coordinate: CLLocationCoordinate2D
     let kind: Kind
@@ -25,7 +25,7 @@ struct ExploreView: View {
     @State private var showTripCompleted = false
     @State private var selectedDriver: DriverInfo? = nil
     @State private var hasCenteredOnUser = false
-
+    
     @State private var showBooking = false
     @State private var bookingDate = Date()
     @State private var showBookingConfirmation = false
@@ -55,7 +55,7 @@ struct ExploreView: View {
     var body: some View {
         ZStack(alignment: .top) {
             
-            // MARK: - Kart
+            // Kart
             Map(
                 coordinateRegion: $region,
                 annotationItems: mapPoints
@@ -85,7 +85,7 @@ struct ExploreView: View {
             }
             .ignoresSafeArea()
             
-            // MARK: - Søk + autocomplete
+            // Søk + autocomplete
             VStack(spacing: 12) {
                 ExploreSearch(
                     fromText: $fromText,
@@ -111,10 +111,10 @@ struct ExploreView: View {
             .padding(.horizontal, 16)
             .padding(.top, 12)
             
-            // MARK: - Zoom-knapper
+            // Zoom knapper
             MapZoomControls(region: $region, bottomPadding: 120)
             
-            // MARK: - Driverliste
+            // Sjåførliste
             DriverList(
                 isPresented: $showDriverList,
                 onSelect: { driver in
@@ -127,7 +127,7 @@ struct ExploreView: View {
                 }
             )
             
-            // MARK: - Bestilling
+            // Bestilling
             if let selectedDriver {
                 DriverOrder(
                     isPresented: $showDriverOrder,
@@ -137,7 +137,7 @@ struct ExploreView: View {
                 )
             }
             
-            // MARK: - Sjåfør på vei
+            // Sjåfør på vei
             if let selectedDriver, showPickUp {
                 PickUpModal(
                     isPresented: $showPickUp,
@@ -149,7 +149,7 @@ struct ExploreView: View {
             }
         }
         
-        // MARK: - Booking Sheet
+        // Booking sheet
         .sheet(isPresented: $showBooking) {
             BookingView(
                 fromAddress: fromText,
@@ -167,7 +167,7 @@ struct ExploreView: View {
             }
         }
         
-        // MARK: - Trip completed
+        // Tur fullført
         .fullScreenCover(isPresented: $showTripCompleted) {
             if let driver = selectedDriver {
                 TripCompleted(isPresented: $showTripCompleted, driver: driver)
@@ -176,20 +176,20 @@ struct ExploreView: View {
             }
         }
         
-        // MARK: - Booking alert
+        // Booking alert
         .alert("Booking bekreftet", isPresented: $showBookingConfirmation) {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Du finner bookingen under profilen din.")
         }
         
-        // MARK: - Når viewet vises
+        // Når viewet vises
         .onAppear {
             viewModel.loadDrivers()
             viewModel.placeAllDriversAround(coord: region.center)
         }
         
-        // MARK: - Center én gang på brukerposisjon (ingen flere auto-endringer)
+        // Sentrer en gang på bruker sin posisjon (ingen flere auto endringer)
         .onChange(of: locationManager.userLocation?.latitude) { _ in
             guard let coord = locationManager.userLocation else { return }
             guard !hasCenteredOnUser else { return }
@@ -213,12 +213,5 @@ struct ExploreView: View {
         }
         
         viewModel.placeAllDriversAround(coord: coord)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ExploreView()
-            .environmentObject(AuthService.shared)
     }
 }

@@ -25,7 +25,7 @@ struct ReceiptView: View {
     let dateString: String
     
     @State private var feedbackType: ReceiptFeedback? = nil
-
+    
     var body: some View {
         ZStack {
             Color(red: 0.98, green: 0.96, blue: 0.90).ignoresSafeArea()
@@ -117,7 +117,7 @@ struct ReceiptView: View {
                 }
             }
         }
-        // 👇 Alert på selve viewet, ikke på ScrollView
+        // Alert på selve viewet, ikke på ScrollView
         .alert(item: $feedbackType) { type in
             switch type {
             case .pdf:
@@ -135,13 +135,4 @@ struct ReceiptView: View {
             }
         }
     }
-}
-
-#Preview {
-    ReceiptView(
-        total: "NOK 459",
-        paymentMethod: "Visa *1234",
-        dateString: "NOV 26, 2025, 11:02 AM"
-    )
-    .environmentObject(AuthService.shared)
 }

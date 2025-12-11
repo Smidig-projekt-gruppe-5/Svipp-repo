@@ -2,8 +2,7 @@ import SwiftUI
 import PhotosUI
 import UIKit
 
-// MARK: - Header (bilde + navn)
-
+// Header (bilde + navn)
 struct ProfileHeader: View {
     @EnvironmentObject var authService: AuthService
     

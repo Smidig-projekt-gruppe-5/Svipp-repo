@@ -21,11 +21,10 @@ struct ExploreSearch: View {
         }
     }
     
-    // MARK: - Søke-kortet (RYDDET – ingen søkeknapp her nå)
     private var searchCard: some View {
         VStack(spacing: 0) {
             
-            // FRA:
+            // Fra:
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Fra:")
@@ -42,7 +41,7 @@ struct ExploreSearch: View {
             
             Divider()
             
-            // TIL:
+            // Til:
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Til:")
@@ -53,14 +52,12 @@ struct ExploreSearch: View {
                         .textFieldStyle(.plain)
                 }
                 Spacer()
-                
-                // SØK-KNAPP FJERNET HER
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
             
             
-            // AUTOCOMPLETE
+            // Autocomplete
             if !suggestions.isEmpty {
                 VStack(spacing: 0) {
                     ForEach(suggestions) { suggestion in
@@ -97,12 +94,11 @@ struct ExploreSearch: View {
         .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 2)
     }
     
-    
-    // MARK: - STORE KNAPPER (Booking & Søk)
+    // Store knapper (booking & søk)
     private var actionRow: some View {
         HStack(spacing: 12) {
             
-            //  BOOKING
+            // Booking
             Button(action: onBooking) {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar.badge.plus")
@@ -117,7 +113,7 @@ struct ExploreSearch: View {
                 .cornerRadius(12)
             }
             
-            //  SØK
+            // Søk
             Button(action: onSearch) {
                 HStack(spacing: 6) {
                     Image(systemName: "magnifyingglass.circle.fill")
@@ -133,14 +129,4 @@ struct ExploreSearch: View {
             }
         }
     }
-}
-
-#Preview {
-    ExploreSearch(
-        fromText: .constant("Min posisjon"),
-        toText: .constant("Kalfarlien 21"),
-        onSearch: {},
-        onBooking: {},
-        suggestions: []
-    )
 }

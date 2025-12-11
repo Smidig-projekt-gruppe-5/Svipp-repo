@@ -14,7 +14,7 @@ struct DriverList: View {
         Modal(
             isPresented: $isPresented,
             title: "Tilgjengelige sjåfører",
-            heightFraction: 0.75   // juster om du vil
+            heightFraction: 0.75
         ) {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 12) {
@@ -46,13 +46,13 @@ struct DriverList: View {
                                 price: driver.price,
                                 imageName: driver.imageName,
                                 onTapDetails: {
-                                    // Les mer → åpne profil
+                                    // Les mer -> åpne profil
                                     selectedDriverForProfile = driver
                                     showDriverProfile = true
                                 }
                             )
                             .onTapGesture {
-                                // Trykk på kortet → velg sjåfør (bestilling)
+                                // Trykk på kortet -> velg sjåfør (bestilling)
                                 withAnimation(.easeInOut) {
                                     onSelect(driver)
                                     isPresented = false
@@ -76,10 +76,4 @@ struct DriverList: View {
             authService.loadPreviousDrivers()
         }
     }
-}
-
-#Preview {
-    DriverList(isPresented: .constant(true)) { _ in }
-        .environmentObject(AuthService.shared)
-        .background(Color.gray.opacity(0.3))
 }

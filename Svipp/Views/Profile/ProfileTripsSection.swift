@@ -1,20 +1,5 @@
 import SwiftUI
 
-struct StatefulPreviewWrapper<Value, Content: View>: View {
-    @State var value: Value
-    var content: (Binding<Value>) -> Content
-    
-    init(_ value: Value, content: @escaping (Binding<Value>) -> Content) {
-        _value = State(initialValue: value)
-        self.content = content
-    }
-    
-    var body: some View {
-        content($value)
-    }
-}
-// Fjerne ^ før levering
-
 struct ProfileTripsSection: View {
     let drivers: [DriverInfo]
     @Binding var favoriteDriverIDs: Set<String>
@@ -64,7 +49,7 @@ struct ProfileTripsSection: View {
                                 showDetailsButton: false,
                                 rightPaddingForPrice: 30
                             )
-
+                            
                             .background(Color(red: 0.98, green: 0.96, blue: 0.90))
                             .cornerRadius(18)
                             .shadow(radius: 2, y: 1)
@@ -97,19 +82,6 @@ struct ProfileTripsSection: View {
             favoriteDriverIDs.remove(driver.id)
         } else {
             favoriteDriverIDs.insert(driver.id)
-        }
-    }
-}
-
-#Preview {
-    StatefulPreviewWrapper(Set<String>()) { binding in
-        ScrollView {
-            ProfileTripsSection(
-                drivers: DriverInfoData.all,
-                favoriteDriverIDs: binding,
-                currentUserName: "Lise",
-                onSelectTrip: { _ in }
-            )
         }
     }
 }

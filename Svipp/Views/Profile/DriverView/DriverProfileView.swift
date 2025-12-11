@@ -19,7 +19,7 @@ struct DriverProfileView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 
-                // MARK: - Toppkort (bilde + navn + rating)
+                //Toppkort (bilde + navn + rating)
                 HStack(alignment: .top, spacing: 16) {
                     Image(driver.imageName)
                         .resizable()
@@ -59,7 +59,7 @@ struct DriverProfileView: View {
                 .cornerRadius(16)
                 .shadow(radius: 2, y: 1)
                 
-                // MARK: - Info-seksjon
+                // Info-seksjon
                 VStack(spacing: 12) {
                     Text("Informasjon")
                         .font(.system(size: 17, weight: .semibold))
@@ -94,7 +94,7 @@ struct DriverProfileView: View {
                 .cornerRadius(20)
                 .shadow(radius: 2, y: 1)
                 
-                // MARK: - Anmeldelser
+                // Anmeldelser
                 if let reviews = driver.reviews, !reviews.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Anmeldelser")
@@ -113,7 +113,6 @@ struct DriverProfileView: View {
                     HStack {
                         Spacer()
                         Button {
-                            // TODO: Naviger til full anmeldelsesliste
                         } label: {
                             HStack(spacing: 6) {
                                 Text("Les Flere")

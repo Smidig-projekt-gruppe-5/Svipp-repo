@@ -9,16 +9,16 @@ struct ProfileLogoutButton: View {
             authService.signOut()
         }) {
             Text("Logg ut")
-                   .font(.system(size: 16, weight: .semibold))
-                   .foregroundColor(.white) // Tekst i hvitt for kontrast
-                   .frame(maxWidth: .infinity)
-                   .padding()
-                   .background(
-                       RoundedRectangle(cornerRadius: 12)
-                           .fill(Color.red) // 🔴 Rød bakgrunn
-                   )
-                   .padding(.horizontal)
-                   .padding(.bottom, 50)
-           }
-       }
-   }
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.red)
+                )
+                .padding(.horizontal)
+                .padding(.bottom, 50)
+        }
+    }
+}

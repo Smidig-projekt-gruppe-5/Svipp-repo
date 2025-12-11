@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ProfileTopBar: View {
     let onFavoritesTapped: () -> Void
-
+    
     var body: some View {
         HStack {
             NavigationLink(destination: SettingsView()) {
@@ -12,9 +12,9 @@ struct ProfileTopBar: View {
                     .padding(.leading, 12)
                     .padding(.vertical, 8)
             }
-
+            
             Spacer()
-
+            
             PrimaryButton(text: "Favoritter") {
                 onFavoritesTapped()
             }

@@ -34,7 +34,7 @@ struct ProfileView: View {
                                 authService.deleteBooking(booking)
                             }
                         )
-
+                        
                         ProfileTripsSection(
                             drivers: authService.previousDrivers,
                             favoriteDriverIDs: $favoriteDriverIDs,
@@ -61,7 +61,7 @@ struct ProfileView: View {
                 paymentMethod: "Visa *1234",
                 dateString: driver.lastTripFormatted
             )
-                .environmentObject(authService)   
+            .environmentObject(authService)
         }
         .onAppear {
             if let uid = authService.user?.uid,
@@ -70,11 +70,5 @@ struct ProfileView: View {
             }
             authService.loadPreviousDrivers()
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ProfileView().environmentObject(AuthService.shared)
     }
 }

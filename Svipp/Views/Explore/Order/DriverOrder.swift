@@ -26,13 +26,12 @@ private struct InfoRow: View {
 }
 
 struct DriverOrder: View {
-    @Binding var isPresented: Bool       
+    @Binding var isPresented: Bool
     @Binding var showDriverList: Bool
     @Binding var showPickUp: Bool
     
     let driver: DriverInfo
     
-    // Midlertidige dummy-verdier
     private let pickupAddress = "Byporten 76"
     private let dropoffAddress = "Ekebergsletta 23"
     private let etaText = "5–8 minutter fra din posisjon"
@@ -46,7 +45,7 @@ struct DriverOrder: View {
         ) {
             ZStack(alignment: .top) {
                 
-                // ALT INNHOLD
+                // Alt innhold
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 16) {
                         
@@ -116,9 +115,9 @@ struct DriverOrder: View {
                     .padding(.top, 30)
                 }
                 
-                // 🔝 TOPP-BAR: Tilbake-knapp + Bestill-knapp
+                // Topp bar: Tilbake-knapp + Bestill-knapp
                 HStack {
-                    // TILBAKE
+                    // Tilbake
                     Button {
                         withAnimation(.easeInOut) {
                             isPresented = false
@@ -136,14 +135,17 @@ struct DriverOrder: View {
                     
                     Spacer()
                     
-                    // BESTILL (capsule)
+                    // Bestill (capsule)
                     Button {
                         print("Bestiller tur med \(driver.name)")
                         withAnimation(.easeInOut) {
+                            
                             // lukk ordremodalen
                             isPresented = false
+                            
                             // ikke vis driverlista
                             showDriverList = false
+                            
                             // vis pickup-skjermen
                             showPickUp = true
                         }
@@ -167,23 +169,4 @@ struct DriverOrder: View {
             }
         }
     }
-}
-
-#Preview {
-    DriverOrder(
-        isPresented: .constant(true),
-        showDriverList: .constant(false),
-        showPickUp: .constant(false),
-        driver: DriverInfo(
-            id: UUID().uuidString,
-            name: "Tom Nguyen",
-            rating: "4.8",
-            address: "Oslo, Gamlebyen 54",
-            experienceYears: 2,
-            totalTrips: 235,
-            price: "555 kr",
-            imageName: "Tom",
-            lastTripAt: "2025-09-12T10:00:00"
-        )
-    )
 }

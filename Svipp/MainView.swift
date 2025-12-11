@@ -18,15 +18,11 @@ struct MainView: View {
                 }
             }
             .ignoresSafeArea(edges: .bottom)
-
+            
             TabBar(selectedTab: $selectedTab)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 20)
         }
         .ignoresSafeArea(edges: .bottom)
     }
-}
-
-#Preview {
-    MainView()
 }
