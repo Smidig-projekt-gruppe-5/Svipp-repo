@@ -80,7 +80,7 @@ struct DriverCard: View {
                     
                     if showDetailsButton {
                         Button(action: onTapDetails) {
-                            Text("Les mer")
+                            Text("Vis profil")
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(Color("SvippTextColor"))
                         }

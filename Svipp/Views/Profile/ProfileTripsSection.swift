@@ -49,7 +49,7 @@ struct ProfileTripsSection: View {
                         let myRating = driver.ratingGivenBy(userName: currentUserName) ?? 0
                         let ratingToShow = String(myRating)
                         
-                        ZStack(alignment: .topTrailing) {
+                        ZStack(alignment: .center) {
                             DriverCard(
                                 name: driver.name,
                                 rating: ratingToShow,
@@ -76,7 +76,7 @@ struct ProfileTripsSection: View {
                                 toggleFavorite(for: driver)
                             } label: {
                                 Image(systemName: favoriteDriverIDs.contains(driver.id) ? "heart.fill" : "heart")
-                                    .font(.system(size: 40))
+                                    .font(.system(size: 25))
                                     .foregroundColor(
                                         favoriteDriverIDs.contains(driver.id) ? .red : .gray
                                     )
