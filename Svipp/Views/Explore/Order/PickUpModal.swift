@@ -10,7 +10,7 @@ struct PickUpModal: View {
     var onCancel: (() -> Void)? = nil
 
     @State private var isCalling = false
-    @State private var secondsLeft: Int = 30
+    @State private var secondsLeft: Int = 10
     @State private var countdownTimer: Timer? = nil
 
     @State private var region = MKCoordinateRegion(
@@ -44,7 +44,7 @@ struct PickUpModal: View {
             }
         }
         .onAppear {
-            secondsLeft = 30
+            secondsLeft = 10
             startCountdown()
         }
         .onDisappear {
