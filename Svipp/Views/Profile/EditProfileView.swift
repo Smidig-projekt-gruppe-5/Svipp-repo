@@ -83,6 +83,7 @@ struct EditProfileView: View {
         .navigationTitle("Rediger profil")
         .onAppear {
             if let p = profile {
+                
                 name = p.name
                 birthdate = p.birthdate
                 phoneNumber = p.phoneNumber ?? ""
@@ -120,12 +121,5 @@ struct EditProfileView: View {
                 }
             }
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        EditProfileView()
-            .environmentObject(AuthService.shared)
     }
 }

@@ -17,7 +17,6 @@ struct PrimaryButton: View {
     }
 }
 
-
 struct SecondaryButton: View {
     let text: String
     let action: () -> Void

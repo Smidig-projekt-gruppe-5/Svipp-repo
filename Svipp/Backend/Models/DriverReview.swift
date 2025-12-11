@@ -1,5 +1,7 @@
 import Foundation
 
+
+// data for reviews 
 struct DriverReview: Identifiable, Codable, Equatable {
     let id: String
     let reviewerName: String

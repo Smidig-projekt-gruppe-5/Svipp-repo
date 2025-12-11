@@ -1,18 +1,21 @@
-
 import SwiftUI
 
 struct TripCompleted: View {
     @Binding var isPresented: Bool
+    let driver: DriverInfo
     
+    @EnvironmentObject var authService: AuthService
+    
+    @State private var rating: Int = 0
+    @State private var comment: String = ""
     
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text("Takk for at du brukte vår tjeneste! ")
+                Text("Takk for at du brukte Svipp!")
                     .font(.title3.bold())
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color("SvippTextColor"))
-                
             }
             
             VStack(spacing: 4) {
@@ -22,38 +25,42 @@ struct TripCompleted: View {
                 
                 Text("Gi sjåføren en vurdering")
                     .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .foregroundColor(Color("SvippTextColor"))
+                    .foregroundColor(Color("SvippTextColor").opacity(0.8))
             }
             
-            // Stjerner
+            StarRatingView(rating: $rating)
+                .frame(height: 24)
+                .padding(.top, 4)
             
+            TextField("Legg igjen en kommentar (valgfritt)", text: $comment, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(3, reservesSpace: true)
+                .padding(.horizontal)
             
-            // "Kanskje senere"-knapp
-            SecondaryButton(text: "Kanskje senere") {
-                withAnimation {
-                    isPresented = false
+            if rating > 0 {
+                PrimaryButton(text: "Send inn") {
+                    sendReview()
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
+            } else {
+                SecondaryButton(text: "Kanskje senere") {
+                    withAnimation {
+                        isPresented = false
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
             }
-            .frame(maxWidth: .infinity)   // gjør at knappen strekker seg fint
-            .padding(.top, 8)
         }
+        .padding()
     }
-}
-
-#Preview {
-    TripCompletedPreview()
-}
-
-struct TripCompletedPreview: View {
-    @State private var isPresented: Bool = true
     
-    var body: some View {
-        ZStack {
-            Color.gray.opacity(0.2)
-                .ignoresSafeArea()
-            
-            TripCompleted(isPresented: $isPresented)
+    private func sendReview() {
+        authService.addReview(for: driver, rating: rating, comment: comment.isEmpty ? nil : comment) { _ in
+            withAnimation {
+                isPresented = false
+            }
         }
     }
 }

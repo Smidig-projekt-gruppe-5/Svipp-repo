@@ -1,45 +1,46 @@
-
 import Foundation
 import CoreLocation
 
-struct PlaceResponse: Codable
-{
+struct PlaceResponse: Codable {
     let features: [PlaceFeature]
 }
 
-//Et enkeltsted fra API
-struct PlaceFeature: Codable, Identifiable
-{
-    var id = UUID()
+// et enkelt sted fra API
+struct PlaceFeature: Codable, Identifiable {
+    let id = UUID()
     let properties: PlaceProperties
     let geometry: PlaceGeometry
+    
+    private enum CodingKeys: String, CodingKey {
+        case properties
+        case geometry
+    }
 }
 
-//Koordinater fra API
-struct PlaceGeometry: Codable
-{
+// koordinater fra API
+struct PlaceGeometry: Codable {
     let coordinates: [Double]
 
-    var coordinate: CLLocationCoordinate2D
-    {
-        CLLocationCoordinate2D(
+    var coordinate: CLLocationCoordinate2D {
+        guard coordinates.count >= 2 else {
+            return CLLocationCoordinate2D(latitude: 0, longitude: 0)
+        }
+        return CLLocationCoordinate2D(
             latitude: coordinates[1],
             longitude: coordinates[0]
         )
     }
 }
 
-//Data fra plasser
-struct PlaceProperties: Codable
-{
+// data fra plasser
+struct PlaceProperties: Codable {
     let name: String?
     let address_line2: String?
     let country: String?
     let city: String?
-    let lon: Double
-    let lat: Double
+    let lon: Double?
+    let lat: Double?
     let categories: [String]?
     
-    //Avstand fra bruker - evt videreutvikling
     var distanceFromUser: Double?
 }

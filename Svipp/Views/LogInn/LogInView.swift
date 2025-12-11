@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftUI
 
 struct LogInView: View {
-    @EnvironmentObject var authService: AuthService   // 🔐 Firebase auth
+    @EnvironmentObject var authService: AuthService  // Firebase auth
     
     @State private var email: String = ""
     @State private var password: String = ""
@@ -89,11 +89,11 @@ struct LogInView: View {
                 
                 VStack {
                     TertiaryButton(text: "Logg inn med BankID", iconName: "BankID") {
-                        // TODO: BankID handler
+                        // Videreutvikling: BankID håndtering
                     }
                     
                     TertiaryButton(text: "Logg inn med Vipps", iconName: "Vipps") {
-                        // TODO: Vipps handler
+                        // Videreutvikling: Vipps håndtering
                     }
                     
                     NavigationLink {

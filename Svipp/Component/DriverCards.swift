@@ -7,40 +7,37 @@ struct DriverCard: View {
     let yearsExperience: String
     let price: String
     let imageName: String
+    var showPriceLabel: Bool = true
+    let onTapDetails: () -> Void
+    var showDetailsButton: Bool = true
+    var rightPaddingForPrice: CGFloat = 0
+    var showsHeart: Bool = false
+    var isFavorite: Bool = false
+    var onToggleFavorite: (() -> Void)? = nil
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Bilde / placeholder
-            ZStack {
-                if let image = UIImage(named: imageName) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color("SvippMainColor"))
-                }
-            }
-            .frame(width: 56, height: 56)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+        HStack(spacing: 14) {
+            // bilde
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 56, height: 56)
+                .clipShape(Circle())
             
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+            // venstre... navn, rating, adresse, erfaring
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
                     Text(name)
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(Color("SvippTextColor"))
                     
-                    Spacer()
-                    
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12))
+                            .foregroundColor(.yellow)
                         Text(rating)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.system(size: 13, weight: .semibold))
                     }
-                    .foregroundColor(.orange)
                 }
                 
                 Text(address)
@@ -54,33 +51,44 @@ struct DriverCard: View {
             
             Spacer()
             
-            // 👉 Pris her
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("Pris")
-                    .font(.system(size: 11))
-                    .foregroundColor(.gray)
+            // høyre.... NOK, pris, hjerte, vis profil knapp
+            VStack(alignment: .trailing, spacing: 4) {
                 
-                Text(price.isEmpty ? "–" : price)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(Color("SvippTextColor"))
+                
+                if showsHeart, let onToggleFavorite {
+                    Button {
+                        onToggleFavorite()
+                    } label: {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .font(.system(size: 18))
+                            .foregroundColor(isFavorite ? .red : .gray)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.bottom,10)
+                }
+                HStack(spacing: 8) {
+                    if showPriceLabel {
+                        Text("NOK")
+                            .font(.caption)
+                    }
+                    
+                    Text(price)
+                        .font(.system(size: 16, weight: .semibold))
+                        .padding(.trailing, rightPaddingForPrice)
+                    
+                    if showDetailsButton {
+                        Button(action: onTapDetails) {
+                            Text("Vis profil")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(Color("SvippTextColor"))
+                        }
+                    }
+                }
             }
+            .padding(12)
+            .background(Color(red: 0.98, green: 0.96, blue: 0.90))
+            .cornerRadius(18)
+            .shadow(color: .black.opacity(0.07), radius: 3, y: 1)
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.svippAccent))
-                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-        )
     }
-}
-
-#Preview {
-    DriverCard(
-        name: "Natasha Brun",
-        rating: "4.6",
-        address: "Oslo sentrum",
-        yearsExperience: "3 år som sjåfør – 180 turer",
-        price: "663 kr",
-        imageName: "Tom"
-    )
 }

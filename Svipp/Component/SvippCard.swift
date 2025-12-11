@@ -21,10 +21,3 @@ struct SvippCard<Content: View>: View {
     }
 }
 
-#Preview {
-    SvippCard {
-        Text("SvippCard preview")
-    }
-    .padding()
-    .background(Color.white)
-}

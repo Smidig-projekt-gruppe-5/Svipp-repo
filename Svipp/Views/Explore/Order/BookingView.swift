@@ -1,14 +1,13 @@
 import SwiftUI
 
 struct BookingView: View {
-    let fromAddress: String      // initial verdi
-    let toAddress: String        // initial verdi
+    let fromAddress: String
+    let toAddress: String
     
     @Binding var bookingDate: Date
     
-    /// Nå sender vi tilbake de faktiske verdiene brukeren skrev inn
     var onConfirm: (_ from: String, _ to: String, _ info: String) -> Void
-
+    
     @Environment(\.dismiss) private var dismiss
     
     @State private var fromInput: String = ""
@@ -80,7 +79,7 @@ struct BookingView: View {
                             }
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 16).fill(.ultraThinMaterial))
-
+                            
                             // Velg tidspunkt
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Når skal vi hente deg?")
@@ -141,13 +140,4 @@ struct BookingView: View {
             }
         }
     }
-}
-
-#Preview {
-    BookingView(
-        fromAddress: "Min posisjon",
-        toAddress: "Kalfarlien 21, Bergen",
-        bookingDate: .constant(Date()),
-        onConfirm: { _, _, _ in }
-    )
 }

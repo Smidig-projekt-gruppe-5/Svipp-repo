@@ -4,7 +4,6 @@ import FirebaseCore
 import FirebaseAuth
 import UIKit
 
-// MARK: - Firebase AppDelegate
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
@@ -22,7 +21,7 @@ struct SvippApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()               
+            RootView()
                 .environmentObject(authService)
         }
     }

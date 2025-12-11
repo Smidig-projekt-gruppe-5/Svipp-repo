@@ -19,7 +19,7 @@ struct DriverProfileView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 
-                // MARK: - Toppkort (bilde + navn + rating)
+                //Toppkort (bilde + navn + rating)
                 HStack(alignment: .top, spacing: 16) {
                     Image(driver.imageName)
                         .resizable()
@@ -59,7 +59,7 @@ struct DriverProfileView: View {
                 .cornerRadius(16)
                 .shadow(radius: 2, y: 1)
                 
-                // MARK: - Info-seksjon
+                // Info-seksjon
                 VStack(spacing: 12) {
                     Text("Informasjon")
                         .font(.system(size: 17, weight: .semibold))
@@ -94,7 +94,7 @@ struct DriverProfileView: View {
                 .cornerRadius(20)
                 .shadow(radius: 2, y: 1)
                 
-                // MARK: - Anmeldelser
+                // Anmeldelser
                 if let reviews = driver.reviews, !reviews.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Anmeldelser")
@@ -113,7 +113,6 @@ struct DriverProfileView: View {
                     HStack {
                         Spacer()
                         Button {
-                            // TODO: Naviger til full anmeldelsesliste
                         } label: {
                             HStack(spacing: 6) {
                                 Text("Les Flere")
@@ -149,7 +148,7 @@ struct ReviewCard: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(Color("SvippTextColor"))
                 
-                if let comment = review.comment, !comment.isEmpty {
+                if let comment = review.comment, !review.comment!.isEmpty {
                     Text(comment)
                         .font(.system(size: 13))
                         .foregroundColor(.gray)
@@ -178,7 +177,7 @@ struct ReviewCard: View {
 struct DriverProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            DriverProfileView(driver: .previewDriver)
+            DriverProfileView(driver: DriverInfoData.all[1])
         }
     }
 }

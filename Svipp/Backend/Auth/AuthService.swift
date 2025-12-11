@@ -13,7 +13,7 @@ class AuthService: ObservableObject {
     @Published var user: FirebaseAuth.User?
     @Published var currentUserProfile: UserInfo?
     
-    /// Global liste med sjåfører (fra Firestore "drivers"-collection)
+    // Global liste med sjåfører fra firestore
     @Published var previousDrivers: [DriverInfo] = []
     @Published var bookings: [SvippBooking] = []
 
@@ -28,11 +28,10 @@ class AuthService: ObservableObject {
             loadUserProfile(uid: user.uid)
         }
         
-        // Sjåfører er globale – last dem uansett
         loadPreviousDrivers()
     }
     
-    // MARK: - Logg inn
+    // Log Inn
     func signIn(email: String, password: String) {
         authError = nil
         isLoading = true
@@ -54,7 +53,20 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Opprett konto + lagre profil
+    // log ut
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            self.user = nil
+            self.currentUserProfile = nil
+            self.previousDrivers = []
+        } catch {
+            self.authError = error.localizedDescription
+        }
+    }
+
+    
+    // opprette og lagre bruker
     func createAccount(name: String, birthdate: String, email: String, password: String) {
         authError = nil
         isLoading = true
@@ -92,7 +104,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Lagre profil i Firestore
+    // lagre profile i firestore
     func saveUserProfile(_ profile: UserInfo) {
         do {
             let data = try JSONEncoder().encode(profile)
@@ -116,7 +128,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Laste profil fra Firestore
+    // laste profile i firestore
     func loadUserProfile(uid: String) {
         db.collection("users").document(uid).getDocument { [weak self] snapshot, error in
             if let error = error {
@@ -138,7 +150,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Oppdater profil (tekstfelter)
+    // oppdatere profile
     func updateUserProfile(
         name: String,
         birthdate: String,
@@ -201,7 +213,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Opplasting av profilbilde
+    // opplasting av profilbilde
     func uploadProfileImage(_ image: UIImage, completion: ((Error?) -> Void)? = nil) {
         guard let user = user else {
             let error = NSError(
@@ -304,15 +316,13 @@ class AuthService: ObservableObject {
         return booking
     }
     
-    // 🔹 NY: Slette booking
+    // slette booking
     func deleteBooking(_ booking: SvippBooking) {
         bookings.removeAll { $0.id == booking.id }
         
     }
     
-    // MARK: - Sjåfører (global "drivers"-collection)
-    
-    /// Leser ALLE sjåfører fra Firestore /drivers
+    // lese alle sjåfører fra firestore
     func loadPreviousDrivers() {
         db.collection("drivers")
             .order(by: "lastTripAt", descending: true)
@@ -343,7 +353,7 @@ class AuthService: ObservableObject {
             }
     }
     
-    /// Lagrer en sjåfør i /drivers
+    // lagrer en sjåfør
     func addPreviousDriver(_ driver: DriverInfo, completion: ((Error?) -> Void)? = nil) {
         do {
             let data = try JSONEncoder().encode(driver)
@@ -368,7 +378,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    /// Oppdaterer en sjåfør i /drivers
+    // oppdaterer en sjåfør
     func updateDriver(_ driver: DriverInfo, completion: ((Error?) -> Void)? = nil) {
         do {
             let data = try JSONEncoder().encode(driver)
@@ -395,34 +405,61 @@ class AuthService: ObservableObject {
         }
     }
     
-    /// Test-sjåfør
-    func addTestDriver() {
-        let formatter = ISO8601DateFormatter()
+}
+
+extension AuthService {
+    func addReview(
+        for driver: DriverInfo,
+        rating: Int,
+        comment: String? = nil,
+        completion: ((Error?) -> Void)? = nil
+    ) {
+        guard let profile = currentUserProfile else {
+            print("Ingen innlogget profil – kan ikke legge til review")
+            completion?(NSError(
+                domain: "AuthService",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Ingen innlogget brukerprofil"]
+            ))
+            return
+        }
         
-        let driver = DriverInfo(
-            id: UUID().uuidString,
-            name: "Test-sjåfør",
-            rating: "4.8",
-            address: "Oslo sentrum",
-            experienceYears: 2,
-            totalTrips: 200,
-            price: "550 kr",
-            imageName: "Tom",
-            lastTripAt: formatter.string(from: Date())
+        let review = DriverReview(
+            reviewerName: profile.name,
+            reviewerAge: 0,
+            rating: Double(rating),
+            comment: comment,
+            createdAt: Date()
         )
         
-        addPreviousDriver(driver) { _ in }
-    }
-    
-    // MARK: - Logg ut
-    func signOut() {
-        do {
-            try Auth.auth().signOut()
-            self.user = nil
-            self.currentUserProfile = nil
-            self.previousDrivers = []
-        } catch {
-            self.authError = error.localizedDescription
+        var updatedReviews = driver.reviews ?? []
+        updatedReviews.append(review)
+        
+        let updatedDriver = DriverInfo(
+            id: driver.id,
+            name: driver.name,
+            rating: driver.rating,
+            address: driver.address,
+            experienceYears: driver.experienceYears,
+            totalTrips: driver.totalTrips,
+            price: driver.price,
+            imageName: driver.imageName,
+            lastTripAt: driver.lastTripAt,
+            age: driver.age,
+            employmentDate: driver.employmentDate,
+            tripCount: driver.tripCount,
+            about: driver.about,
+            reviews: updatedReviews
+        )
+        
+        // Bruker firestore logikk
+        updateDriver(updatedDriver) { [weak self] error in
+            if error == nil {
+                if let index = self?.previousDrivers.firstIndex(where: { $0.id == driver.id }) {
+                    self?.previousDrivers[index] = updatedDriver
+                }
+            }
+            completion?(error)
         }
     }
 }

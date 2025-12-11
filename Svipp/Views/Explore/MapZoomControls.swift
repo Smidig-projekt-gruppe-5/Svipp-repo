@@ -17,9 +17,9 @@ struct MapZoomControls: View {
                     .clipShape(Circle())
                     .shadow(radius: 3)
                     .foregroundColor(Color.svippMain)
-
+                
             }
-
+            
             Button {
                 zoomOut()
             } label: {
@@ -30,7 +30,7 @@ struct MapZoomControls: View {
                     .clipShape(Circle())
                     .shadow(radius: 3)
                     .foregroundColor(Color.svippMain)
-
+                
             }
         }
         .padding(.trailing, 16)
@@ -52,15 +52,4 @@ struct MapZoomControls: View {
             region.span.longitudeDelta *= 1.25
         }
     }
-}
-
-#Preview {
-    MapZoomControls(
-        region: .constant(
-            MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
-                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-            )
-        )
-    )
 }

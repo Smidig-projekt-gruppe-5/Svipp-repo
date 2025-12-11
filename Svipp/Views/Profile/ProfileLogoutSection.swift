@@ -10,12 +10,12 @@ struct ProfileLogoutButton: View {
         }) {
             Text("Logg ut")
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.red)
+                .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.red.opacity(0.4), lineWidth: 1)
+                        .fill(Color.red)
                 )
                 .padding(.horizontal)
                 .padding(.bottom, 50)

@@ -1,78 +1,133 @@
 import SwiftUI
 import MapKit
+import CoreLocation
+
+private struct MapPoint: Identifiable {
+    enum Kind {
+        case user
+        case driver(DriverInfo)
+    }
+    
+    let id = UUID()
+    let coordinate: CLLocationCoordinate2D
+    let kind: Kind
+}
 
 struct ExploreView: View {
     @EnvironmentObject var authService: AuthService
     
     @State private var fromText: String = "Min posisjon"
     @State private var toText: String = ""
-    @State private var showFilter = false
     
-    // Modal-states
     @State private var showDriverList = false
     @State private var showDriverOrder = false
     @State private var showPickUp = false
     @State private var showTripCompleted = false
     @State private var selectedDriver: DriverInfo? = nil
+    @State private var hasCenteredOnUser = false
     
-    // Booking
     @State private var showBooking = false
     @State private var bookingDate = Date()
     @State private var showBookingConfirmation = false
-
+    
+    @StateObject private var viewModel = ExploreViewModel()
+    @StateObject private var locationManager = LocationManager()
+    
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 59.9139, longitude: 10.7522),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
-
+    
+    private var mapPoints: [MapPoint] {
+        var items: [MapPoint] = []
+        
+        if let userCoord = locationManager.userLocation {
+            items.append(MapPoint(coordinate: userCoord, kind: .user))
+        }
+        
+        for driver in viewModel.drivers {
+            items.append(MapPoint(coordinate: driver.coordinate, kind: .driver(driver)))
+        }
+        
+        return items
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
-            // Bakgrunnskart
-            Map(coordinateRegion: $region)
-                .ignoresSafeArea()
-
+            
+            // Kart
+            Map(
+                coordinateRegion: $region,
+                annotationItems: mapPoints
+            ) { point in
+                MapAnnotation(coordinate: point.coordinate) {
+                    switch point.kind {
+                    case .user:
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 14, height: 14)
+                            .overlay(
+                                Circle().stroke(Color.white, lineWidth: 2)
+                            )
+                            .shadow(radius: 3)
+                        
+                    case .driver(let driver):
+                        DriverPin(
+                            imageName: driver.imageName,
+                            priceText: driver.price
+                        ) {
+                            selectedDriver = driver
+                            showDriverOrder = true
+                        }
+                        .zIndex(1000)
+                    }
+                }
+            }
+            .ignoresSafeArea()
+            
+            // Søk og autocomplete
             VStack(spacing: 12) {
                 ExploreSearch(
                     fromText: $fromText,
                     toText: $toText,
                     onSearch: {
-                        guard !toText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                            return
-                        }
-                        withAnimation {
-                            showDriverList = true
-                        }
+                        viewModel.suggestions = []
+                        withAnimation { showDriverList = true }
                     },
-                    onBooking: {
-                        showBooking = true
+                    onBooking: { showBooking = true },
+                    suggestions: viewModel.suggestions,
+                    onSelectSuggestion: handleSelectSuggestion,
+                    onClearSuggestions: {
+                        viewModel.suggestions = []
                     }
                 )
-
+                .onChange(of: toText) { newValue in
+                    viewModel.query = newValue
+                    Task { await viewModel.searchAutocomplete() }
+                }
+                
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-
-            MapZoomControls(region: $region, bottomPadding: 100)
-                .zIndex(0)
-
-            // Første modal – velg sjåfør
+            
+            // Zoom knapper
+            MapZoomControls(region: $region, bottomPadding: 120)
+            
+            // Sjåførliste
             DriverList(
                 isPresented: $showDriverList,
                 onSelect: { driver in
                     selectedDriver = driver
                     showDriverList = false
-
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation {
-                            showDriverOrder = true
-                        }
+                        withAnimation { showDriverOrder = true }
                     }
                 }
             )
-            .zIndex(1)
-
-            // Andre modal – bestill
+            
+            // Bestilling
             if let selectedDriver {
                 DriverOrder(
                     isPresented: $showDriverOrder,
@@ -80,10 +135,9 @@ struct ExploreView: View {
                     showPickUp: $showPickUp,
                     driver: selectedDriver
                 )
-                .zIndex(2)
             }
-
-            // Tredje skjerm – sjåfør på vei
+            
+            // Sjåfør på vei
             if let selectedDriver, showPickUp {
                 PickUpModal(
                     isPresented: $showPickUp,
@@ -92,10 +146,10 @@ struct ExploreView: View {
                     showTripCompleted: $showTripCompleted
                 )
                 .transition(.move(edge: .bottom))
-                .zIndex(3)
             }
         }
-        // Booking-sheet
+        
+        // Booking sheet
         .sheet(isPresented: $showBooking) {
             BookingView(
                 fromAddress: fromText,
@@ -113,22 +167,51 @@ struct ExploreView: View {
             }
         }
         // Fullskjerm for tur fullført
+        
         .fullScreenCover(isPresented: $showTripCompleted) {
-            TripCompleted(isPresented: $showTripCompleted)
+            if let driver = selectedDriver {
+                TripCompleted(isPresented: $showTripCompleted, driver: driver)
+            } else {
+                Text("Noe gikk galt – fant ikke sjåfør")
+            }
         }
-        // Bekreftelses-alert etter booking
+        
+        // Booking alert
         .alert("Booking bekreftet", isPresented: $showBookingConfirmation) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Vi har mottatt bookingen din. Du finner den under profilen din.")
+            Text("Du finner bookingen under profilen din.")
         }
-        .navigationBarTitleDisplayMode(.inline)
+        
+        // Når viewet vises
+        .onAppear {
+            viewModel.loadDrivers()
+            viewModel.placeAllDriversAround(coord: region.center)
+        }
+        
+        // Sentrer en gang på bruker sin posisjon (ingen flere auto endringer)
+        .onChange(of: locationManager.userLocation?.latitude) { _ in
+            guard let coord = locationManager.userLocation else { return }
+            guard !hasCenteredOnUser else { return }
+            
+            hasCenteredOnUser = true
+            withAnimation { region.center = coord }
+        }
     }
-}
-
-#Preview {
-    NavigationStack {
-        ExploreView()
-            .environmentObject(AuthService.shared)
+    
+    private func handleSelectSuggestion(_ suggestion: AutocompleteSuggestion) {
+        toText = suggestion.properties.formatted ?? ""
+        viewModel.suggestions = []
+        
+        let coord = suggestion.geometry.coordinate
+        
+        withAnimation {
+            region = MKCoordinateRegion(
+                center: coord,
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+        }
+        
+        viewModel.placeAllDriversAround(coord: coord)
     }
 }
